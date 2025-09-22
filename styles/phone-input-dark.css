@@ -1,0 +1,29 @@
+/* styles/phone-input-dark.css */
+
+.dark .PhoneInput {
+  color: #e5e7eb;
+  
+}
+
+
+
+
+.dark .PhoneInputCountrySelect {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.PhoneInputCountrySelect:hover,
+.dark .PhoneInputCountrySelect:focus {
+  background-color: #374151;
+}
+
+.dark .PhoneInputCountrySelect option {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
