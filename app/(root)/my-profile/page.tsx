@@ -72,7 +72,15 @@ const MyProfile = () => {
         {/* Info Section */}
         {!isLoading && currentUser && <div className="text-center space-y-3 dark:text-white ">
           <h2 className="text-2xl font-semibold">Full name: {currentUser?.fullName}</h2>
-          {currentUser?.fullName && <p className="text-sm dark:text-gray-200">User name: @{currentUser?.username.toLowerCase() || currentUser?.fullName.toLowerCase().replace(/\s+/g, '') }</p>}
+          {currentUser?.fullName && (
+            <p className="text-sm dark:text-gray-200">
+              User name: @{
+                currentUser?.username
+                  ? currentUser.username.toLowerCase()
+                  : (currentUser?.fullName ? currentUser.fullName.toLowerCase().replace(/\s+/g, '') : '')
+              }
+            </p>
+          )}
           <p className="text-sm dark:text-gray-300">Email: {currentUser?.email}</p>
             {currentUser?.role && <p className="text-sm text-green-500 font-bold capitalize">
                 <span className='text-black dark:text-white'>Role:</span> {currentUser?.role}
