@@ -74,7 +74,7 @@ const RenderField = ({ field, props}: {field: any, props: CustomProps}) => {
                     </Button>
                 </div>
             )
-        case FormFieldType.PHONE_NUMBER:
+        case FormFieldType.PHONE_INPUT:
             return (
                 <FormControl className='bg-[#fafafa] dark:border-dark-500 dark:bg-dark-400   shadow '>
                     <PhoneInput

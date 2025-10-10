@@ -15,6 +15,20 @@
       "when": 1758046866911,
       "tag": "0001_first_thunderball",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758897872107,
+      "tag": "0002_nappy_vulture",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759172505197,
+      "tag": "0003_burly_khan",
+      "breakpoints": true
     }
   ]
 }

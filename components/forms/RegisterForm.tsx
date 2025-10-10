@@ -13,72 +13,61 @@ import { Doctors, GenderOptions, IdentificationTypes, PatientFormDefaultValues }
 import { Label } from '../ui/label'
 import { SelectItem } from '../ui/select'
 import Image from 'next/image'
-import { FileUploader } from '../FileUploader'
+import FileUpload from '../FileUploader'
 import { useRouter } from 'next/navigation'
+import useSWR from 'swr'
+import { registerPatient } from '@/lib/actions/createPatient'
+import { toast } from "@/hooks/use-toast";
 
-
-
+const fetcher = (url: string) => fetch(url).then(res => {
+    if (!res.ok) throw new Error('Network response was not ok');
+    return res.json()
+});
 
 
 const RegisterForm = () => {
+
+    const { data: currentUser, error, isLoading: userLoading} = useSWR('/api/auth/authorized-user', fetcher, {
+        refreshInterval: 3000,
+        revalidateOnFocus: true,
+        revalidateOnReconnect: true,
+    });
+        
+
     const router = useRouter();
     const [isLoading, setIsLoadeing] = useState(false)
     const form = useForm<z.infer<typeof PatientFormValidation>>({
         resolver: zodResolver(PatientFormValidation),
             defaultValues: {
                 ...PatientFormDefaultValues,
-                name: '',
-                email: '',
-                phone: '',
+                 phone: "",   
             },     
     })
 
-    const onSubmit = async (values: z.infer<typeof PatientFormValidation>) => {
+    const onSubmit = async (values: any) => {
+        console.log(values)
         setIsLoadeing(true)
-
-        let formData;
-        if(values.identificationDocument && values.identificationDocument.length > 0) {
-            const blobFile = new Blob([values.identificationDocument[0]], { type: values.identificationDocument[0].type });
-            formData = new FormData();
-            formData.append('fileName', blobFile, values.identificationDocument[0].name);
-        }
-
         try {
-            const patient = {
-                // userId: user.$id,
-                name: values.name,
-                email: values.email,
-                phone: values.phone,
-                birthDate: new Date(values.birthDate),
-                gender: values.gender,
-                address: values.address,
-                occupation: values.occupation,
-                emergencyContactName: values.emergencyContactName,
-                emergencyContactNumber: values.emergencyContactNumber,
-                primaryPhysician: values.primaryPhysician,
-                insuranceProvider: values.insuranceProvider,
-                insurancePolicyNumber: values.insurancePolicyNumber,
-                allergies: values.allergies,
-                currentMedication: values.currentMedication,
-                familyMedicalHistory: values.familyMedicalHistory,
-                pastMedicalHistory: values.pastMedicalHistory,
-                identificationType: values.identificationType,
-                identificationNumber: values.identificationNumber,
-                identificationDocument: values.identificationDocument
-                ? formData
-                : undefined,
-                privacyConsent: values.privacyConsent,
+            const payload = {
+                ...values,
+                userId: currentUser.id,
+                phone: values.phone ?? undefined, // optional phone field
             };
 
-            // const newPatient = await registerPatient(patient);
+            const res = await registerPatient(payload);
 
-            // if (newPatient) {
-            //     router.push(`/patients/${user.$id}/new-appointment`);
-            // }
-        } catch (error) {
-            console.log(error)
+            if (!res.success) {
+                toast({ title: "Error", description: res.error ?? "Failed to register patient", variant: "destructive" });
+                return;
+            }
+
+            toast({ title: "Patient registered", description: "Patient registered successfully" });
+            router.push(`/patients/${currentUser.id}/new-appointment`); // or wherever
+        } catch (err: any) {
+            console.error("onSubmit error:", err);
+            toast({ title: "Unexpected error", description: err?.message ?? String(err), variant: "destructive" });
         } finally {
-           setIsLoadeing(false)
+            setIsLoadeing(false);
         }
         
 
@@ -88,41 +77,28 @@ const RegisterForm = () => {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit) } className='space-y-12 flex-1 pb-10'>
                 <section className='space-y-4'>
-                    <h1 className='header'>Welcome 👋</h1>
-                    <p className='text-dark-700'>Let us know more about yourself</p>
+                    <h1 className='header'>Welcome {currentUser?.fullName} 👋</h1>
+                    <p className='text-dark-700'>Thank you for using CarePulse! You are currently signed in with these info:</p>
+                    <div className='flex flex-col gap-1 text-sm'>
+                        <span className='text-dark-700'>Email: {currentUser?.email}</span>
+                        {currentUser?.phoneNumber && currentUser?.phoneNumber !== "-" && <span className='text-dark-700'>Phone number: {currentUser?.phoneNumber}</span>}          
+                    </div>
                 </section>
                 <section className='space-y-6'>
                     <div className='mb-9 space-y-1'>
                         <h2 className='sub-header'>Personal information</h2>
                     </div>
-               
-                    <CustomFormField 
-                        type={FormFieldType.INPUT}
-                        label="Full name"
-                        name="name"
-                        placeholder="Ali Hameed"
-                        control={form.control}
-                        iconSrc="/assets/icons/user.svg"
-                        iconAlt="user"
-                        />
-                    <div className='flex flex-col md:flex-row gap-6'>
-                        <CustomFormField 
-                            type={FormFieldType.INPUT}
-                            label='Email Address'
-                            name='email'
-                            placeholder='alihameed@gmail.com'
-                            control={form.control}
-                            iconSrc="/assets/icons/email.svg"
-                            iconAlt='email'
-                        />
-                        <CustomFormField 
-                            type={FormFieldType.PHONE_NUMBER}
-                            label='Phone Number'
-                            name='phone'
-                            placeholder='+00 0342 0456 64'
-                            control={form.control}
-                            />
-                    </div>
+                    {!currentUser?.phoneNumber || currentUser?.phoneNumber === "-" &&
+                        <div className='w-full md:w-1/2'>
+                            <CustomFormField
+                                type={FormFieldType.PHONE_INPUT}
+                                control={form.control}
+                                name="phone"
+                                label="Phone Number"
+                                placeholder="(555) 123-4567"
+                                />
+                        </div>
+                    }
 
                     <div className='flex flex-col md:flex-row gap-6'>
                         <CustomFormField 
@@ -187,9 +163,9 @@ const RegisterForm = () => {
                             />
 
                         <CustomFormField 
-                            type={FormFieldType.PHONE_NUMBER}
+                            type={FormFieldType.PHONE_INPUT}
                             label='Emergency Phone number'
-                            name='emergencyPhoneNumber'
+                            name='emergencyContactNumber'
                             placeholder='+964 781 172 9815'
                             control={form.control}
                         />
@@ -229,7 +205,7 @@ const RegisterForm = () => {
                         <CustomFormField 
                             type={FormFieldType.INPUT}
                             label="Insurance policy number"
-                            name="insuranceNumber"
+                            name="insurancePolicyNumber"
                             placeholder="ex: ABC1234567"
                             control={form.control}
                         />
@@ -245,7 +221,7 @@ const RegisterForm = () => {
                         <CustomFormField 
                             type={FormFieldType.TEXTAREA}
                             label="Current medications"
-                            name="currentMedications"
+                            name="currentMedication"
                             placeholder="ex: Ibuprofen 200mg, Levothyroxine 50mcg"
                             control={form.control}
                         />
@@ -254,7 +230,7 @@ const RegisterForm = () => {
                         <CustomFormField 
                             type={FormFieldType.TEXTAREA}
                             label="Family medical history (if relevant)"
-                            name="familymedicalHistory"
+                            name="familyMedicalHistory"
                             placeholder="ex: Mother had breast cancer"
                             control={form.control}
                         />
@@ -300,7 +276,15 @@ const RegisterForm = () => {
                         control={form.control}
                         renderSkeleton={(field) => (
                             <FormControl>
-                                <FileUploader files={field.value} onChange={field.onChange} />
+                                <FileUpload
+                                    type="image"
+                                    accept="image/*"
+                                    placeholder="Click to upload or drag and drop SVG, PNG, JPG or GIF (max. 800x400px)"
+                                    folder="patients/identifications"
+                                    variant="light"
+                                    onFileChange={field.onChange}
+                                    value={field.value}
+                                    />
                             </FormControl>
                         )}
                     />
@@ -314,7 +298,7 @@ const RegisterForm = () => {
                     <CustomFormField 
                         type={FormFieldType.CKECKBOX}
                         label="I consent to receive treatment for my health condition."
-                        name="receiveConsent"
+                        name="treatmentConsent"
                         control={form.control}
                     />
                     <CustomFormField 

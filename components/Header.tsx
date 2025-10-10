@@ -28,7 +28,7 @@ const Header = () => {
                 <Image src="/assets/icons/logo-icon.svg" alt="Patient"  width={160} height={160} className=" h-10 w-fit"/>
                 <p className="text-2xl hidden sm:block font-bold dark:text-white">CarePulse</p>
             </Link>
-             <Link href="/?admin=true" className="text-green-500">Admin</Link>
+             {currentUser?.role === 'ADMIN' && <Link href="/admin" className="text-green-500">Admin</Link>}
         </div>
         <div className='flex items-center gap-10'>
            {currentUser?.id && (

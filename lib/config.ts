@@ -9,6 +9,12 @@ const config = {
             qstashUrl: process.env.QSTASH_URL!,
             qstashToken: process.env.QSTASH_TOKEN!,
         },
+        
+        imagekit: {
+           publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!,
+           urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT!,
+           privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
+        },
 
         resendToken: process.env.RESEND_TOKEN!,
     }

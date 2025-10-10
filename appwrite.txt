@@ -1,1 +1,0 @@
-https://developers.facebook.com/apps/769938792499241/use_cases/customize/?use_case_enum=FB_LOGIN&selected_tab=quickstart&product_route=fb-login

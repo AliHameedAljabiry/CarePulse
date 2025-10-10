@@ -1,15 +1,20 @@
 
 import RegisterForm from '@/components/forms/RegisterForm'
 import { RegisterImage } from '@/components/RegisterImage'
+import { db } from '@/database/drizzle'
+import { patient, users } from '@/database/schema'
+import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
 const Register = async ({ params }: { params: Promise<{ userId: string }> } ) => {
   const userId = (await params).userId;
-  // const user = await getUser(userId)
-  // const patient = await getPatient(userId);
+  
+  const currentPatient = await db.select().from(patient).where(eq(patient.userId, userId))
+  
+  if (currentPatient) redirect(`/patients/${userId}/new-appointment`)
 
-  // if (patient) redirect(`/patients/${userId}/new-appointment`);
+
   return (
     <div className="h-screen flex max-h-screen ">
       <section className=" remove-scrollbar container  max-h-screen overflow-auto ">
