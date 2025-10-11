@@ -32,7 +32,18 @@ declare module "next-auth" {
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
   secret: process.env.AUTH_SECRET,
-
+  
+  cookies: {
+  sessionToken: {
+    name: process.env.NODE_ENV === "production" ? "__Host-authjs.session-token" : "authjs.session-token",
+    options: {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      secure: process.env.NODE_ENV === "production",
+    },
+  },
+},
   session: { strategy: "jwt" },
   providers: [
     FacebookProvider({
