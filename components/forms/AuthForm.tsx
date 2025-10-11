@@ -72,7 +72,12 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
                 ? "You have successfully signed in."
                 : "You have successfully signed up.",
             });
-            router.push(`/patients/${currentUser.id}/register`);
+
+            if (currentUser) {
+                router.push(`/patients/${currentUser.id}/register`);
+            } else {
+                console.log("currentUser is null after successful operation");
+            }
         } else {
             toast({
                 title: `Error ${isSignIn ? 'Signing In' : 'Signing Up'}`,
@@ -86,7 +91,11 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
     const signInWithGoogle = async () => {
         try {
             await signIn("google");
-            router.push(`/patients/${currentUser.id}/register`);
+            if (currentUser) {
+                    router.push(`/patients/${currentUser.id}/register`);
+            } else {
+                console.log("currentUser is null after successful operation");
+            }
         } catch (error) {
             console.error("Google Sign-In Error:", error);
             toast({
@@ -100,7 +109,11 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
     const signInWithFacebook = async () => {
         try {
             await signIn("facebook");
-            router.push(`/patients/${currentUser.id}/register`);
+            if (currentUser) {
+                router.push(`/patients/${currentUser.id}/register`);
+            } else {
+                console.log("currentUser is null after successful operation");
+            }
         } catch (error) {
             console.error("Facebook Sign-In Error:", error);
             toast({

@@ -6,10 +6,10 @@ import { ReactNode } from "react"
 
 
 
-const Layout = async ({ children }: { children: ReactNode }) => {
+const AuthLayout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
   if (session) redirect(`/patients/${session?.user?.id}/register`);
-  console.log("session",session)
+
     return (
         <div className="h-screen flex max-h-screen  ">
               <section className="remove-scrollbar container my-auto ">
@@ -35,4 +35,4 @@ const Layout = async ({ children }: { children: ReactNode }) => {
     )
 }
 
-export default Layout;
+export default AuthLayout;

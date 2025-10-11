@@ -35,7 +35,6 @@ const MyProfile = () => {
             mutate('/api/auth/authorized-user', null, { revalidate: false });
             await signOut({ redirect: false });
             router.push('/sign-in');
-            redirect('/sign-in');
         } catch (error) {
             console.error("Error signing out:", error);
         }
