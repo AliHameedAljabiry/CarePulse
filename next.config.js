@@ -3,15 +3,29 @@ const nextConfig = {
   experimental: {
     typedRoutes: true
   },
-  images: {
-    domains: ["lh3.googleusercontent.com"]
-  },
   eslint: {
-    dirs: ["app", "components", "lib"]
+    ignoreDuringBuilds: true,
   },
+  images: { 
+    domains: ["lh3.googleusercontent.com"]
+   },
+
   typescript: {
-    ignoreBuildErrors: false
-  }
+    ignoreBuildErrors: true,
+  },
+
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

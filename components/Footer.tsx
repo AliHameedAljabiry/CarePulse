@@ -46,17 +46,17 @@ const Footer = () => {
             <div className="flex flex-col items-center">
               <h3 className="font-semibold mb-4 ">Connect</h3>
               <div className="flex space-x-4 ">
-                <Link href={gmailLink} target="_blank" rel="noopener noreferrer">
+                <a href={gmailLink} target="_blank" rel="noopener noreferrer" title="Send email" aria-label="Send email">
                     <Image src="/assets/images/gmail.png" alt="gmail"  width={30} height={30} style={{ width: '30px', height: '30px' }} />
-                </Link>
+                </a>
 
-                <Link href={linkedinUrl} target="_blank" rel="noopener noreferrer">
-                    <Image src="/assets/icons/linkedIn.svg" alt="gmail"  width={30} height={30}/>
-                </Link>
+                <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" title="Open LinkedIn profile" aria-label="Open LinkedIn profile">
+                    <Image src="/assets/icons/linkedIn.svg" alt="LinkedIn"  width={30} height={30}/>
+                </a>
 
-                <Link href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                    <Image src="/assets/icons/whatsapp.svg" alt="gmail"  width={30} height={30}/>
-                </Link>
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" title="Open WhatsApp chat" aria-label="Open WhatsApp chat">
+                    <Image src="/assets/icons/whatsapp.svg" alt="WhatsApp"  width={30} height={30}/>
+                </a>
               </div>
             </div>
             
