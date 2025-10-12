@@ -6,9 +6,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  images: { 
-    domains: ["lh3.googleusercontent.com"]
-   },
+  images: { unoptimized: true },
 
   typescript: {
     ignoreBuildErrors: true,
