@@ -77,6 +77,7 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
                 router.push(`/patients/${currentUser.id}/register`);
             } else {
                 console.log("currentUser is null after successful operation");
+                router.refresh();
             }
         } else {
             toast({
@@ -95,6 +96,7 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
                     router.push(`/patients/${currentUser.id}/register`);
             } else {
                 console.log("currentUser is null after successful operation");
+                router.refresh();
             }
         } catch (error) {
             console.error("Google Sign-In Error:", error);
@@ -113,6 +115,7 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
                 router.push(`/patients/${currentUser.id}/register`);
             } else {
                 console.log("currentUser is null after successful operation");
+                router.refresh();
             }
         } catch (error) {
             console.error("Facebook Sign-In Error:", error);
@@ -207,7 +210,7 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
             <span>
                 {isSignIn 
                     ?<Link 
-                        href="auth/forgot-password" 
+                        href="/forgot-password" 
                         className={cn(isSignIn ? "underline text-blue-400 dark:text-[#E7C9A5]" : "dark:text-gray-300")}
                     >
                     Forgot your password?

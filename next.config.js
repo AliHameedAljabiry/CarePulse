@@ -1,27 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  
-  eslint: {
-    ignoreDuringBuilds: true,
+  experimental: {
+    typedRoutes: true
   },
-  images: { unoptimized: true },
-
+  images: {
+    domains: ["lh3.googleusercontent.com"]
+  },
+  eslint: {
+    dirs: ["app", "components", "lib"]
+  },
   typescript: {
-    ignoreBuildErrors: true,
-  },
-
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
+    ignoreBuildErrors: false
+  }
 };
 
-module.exports = nextConfig;
+export default nextConfig;

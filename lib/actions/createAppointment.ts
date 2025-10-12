@@ -16,13 +16,13 @@ export const createAppointment = async (params: Props) => {
     const newAppointments = await db
       .insert(appointments)
       .values({
-        patientId: patientId,
+        patientId: patientId as any,
         doctor: values.doctor,
-        schedule: new Date(values.schedule),
+        schedule: new Date(values.schedule as string | Date),
         reason: values.reason!,
-        status: status,
-        note: values.note,
-      })
+        status: status ?? "PENDING",
+        note: values.note ?? "",
+      } as any)
       .returning();
 
     return {

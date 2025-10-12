@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import { ThemeProvider } from "next-themes";
 import { Toaster } from '@/components/ui/toaster';
+import { AuthProviders } from '@/components/auth/Providers';
 
 
 const fontSans = Plus_Jakarta_Sans({ 
@@ -54,9 +55,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('min-h-screen bg-light-300  dark:bg-dark-300 font-sans antialiased', fontSans.variable)}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-        </ThemeProvider>
+        <AuthProviders>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+          </ThemeProvider>
+        </AuthProviders>
         <Toaster />
       </body>
     </html>
