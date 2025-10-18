@@ -91,7 +91,7 @@ export const appointments = pgTable("appointments", {
     .notNull()
     .references(() => patient.id, { onDelete: "cascade" }),
   doctor: varchar("doctor", { length: 255 }).notNull(),
-  schedule: timestamp("schedule", { withTimezone: true, mode: 'date' }).notNull(),
+  schedule: timestamp("schedule", { withTimezone: true }).notNull(),
   reason: varchar("reason", { length: 255 }).notNull(),
   note: varchar("note", { length: 255 }).notNull(),
   status: APPOINTMENT_STATUS_ENUM('appointment_status').notNull().default('PENDING'),
