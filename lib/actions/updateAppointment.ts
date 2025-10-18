@@ -15,12 +15,23 @@ interface Props extends Partial<Appointment> {
 export const updateAppointment = async (params: Props) => {
   try {
     const { patientId, appointmentId,  status,  ...values } = params;
+
+    let scheduleDate: Date;
+
+    if (values.schedule instanceof Date) {
+      scheduleDate = values.schedule;
+    } else if (typeof values.schedule === 'string') {
+      scheduleDate = new Date(values.schedule);
+    } else {
+      scheduleDate = new Date();
+    }
+
     await db
       .update(appointments)
       .set({
         patientId: patientId as any,
         doctor: values.doctor,
-        schedule: new Date(values.schedule as string | Date),
+        schedule: scheduleDate,
         reason: values.reason!,
         status: status ?? "PENDING",
         note: values.note ?? "",

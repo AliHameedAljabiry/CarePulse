@@ -104,19 +104,22 @@ export const getDoctorImage = (
   return doctor ? doctor.image : "/assets/images/default-doctor.png";
 };
 
-export const formatDate = (date: Date) => {
-        return new Date(date).toLocaleDateString('en-US', {
+export const formatDate = (date: Date | string) => {
+        const dateObj = typeof date === 'string' ? new Date(date) : date;
+        return dateObj.toLocaleString('en-US', {
             weekday: 'short',
             year: 'numeric',
             month: 'short',
             day: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: true
         });
     };
 
-export const isUpcoming = (date: Date) => {
-    return new Date(date) > new Date();
+export const isUpcoming = (date: Date | string) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj > new Date();
 };
 
 export const getStatusColor = (status: string) => {
