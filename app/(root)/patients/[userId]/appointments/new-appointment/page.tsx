@@ -5,15 +5,13 @@ import { patient } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import Image from "next/image";
 
-// import { AppointmentForm } from "@/components/forms/AppointmentForm";
+
 
 
 const Appointment = async({ params }: { params: Promise<{ userId: string }> } ) => {
-  const userId = (await params).userId;
-    
-    const currentPatient = await db.select().from(patient).where(eq(patient.userId, userId))
-    const patientRecord = currentPatient[0]; 
-    console.log("patientId", patientRecord?.id)
+  const patientId = (await params).userId;
+   
+    console.log("patientId", patientId)
 
   return (
     <div className="flex h-screen max-h-screen">
@@ -21,8 +19,7 @@ const Appointment = async({ params }: { params: Promise<{ userId: string }> } ) 
         <div className="sub-container max-w-3xl flex-1 justify-between">
           <AppointmentForm
               type="create"
-              patientId={patientRecord?.id}
-              userId={userId}
+              patientId={patientId}
           />
         </div>
       </section>

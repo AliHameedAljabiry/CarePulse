@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    typedRoutes: true
-  },
+  output: 'standalone', // Or 'export' if you want fully static
+  trailingSlash: true, // Better compatibility with Netlify
+  
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -12,10 +12,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  
+ 
   turbopack: {
     rules: {
       '*.svg': {

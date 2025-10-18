@@ -101,7 +101,9 @@ export const PatientFormValidation = z.object({
 // ------------------------------------------------------------------------------
 export const CreateAppointmentSchema = z.object({
   doctor: z.string().min(2, "Select at least one doctor"),
-  schedule: z.coerce.date(),
+  schedule: z.date({
+  required_error: "Please select a date and time",
+}),
 
   reason: z
     .string()
@@ -116,7 +118,9 @@ export const CreateAppointmentSchema = z.object({
 
 export const ScheduleAppointmentSchema = z.object({
   doctor: z.string().min(2, "Select at least one doctor"),
-  schedule: z.coerce.date(),
+   schedule: z.date({
+  required_error: "Please select a date and time",
+}),
   reason: z.string().optional(),
   note: z.string().optional(),
   cancellationReason: z.string().optional(),
@@ -126,7 +130,9 @@ export const ScheduleAppointmentSchema = z.object({
 
 export const CancelAppointmentSchema = z.object({
   doctor: z.string().min(2, "Select at least one doctor"),
-  schedule: z.coerce.date(),
+  schedule: z.date({
+  required_error: "Please select a date and time",
+}),
   reason: z.string().optional(),
   note: z.string().optional(),
 

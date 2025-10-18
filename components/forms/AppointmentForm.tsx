@@ -20,20 +20,16 @@ import SubmitButton from "../SubmitButton";
 import { Form } from "../ui/form";
 import { FormFieldType } from "./AuthForm";
 import { createAppointment } from "@/lib/actions/createAppointment";
+import { updateAppointment } from "@/lib/actions/updateAppointment";
 
-export const AppointmentForm = ({
-  userId,
-  patientId,
-  type = "create",
-  appointment,
-  setOpen,
-}: {
-  userId: string
+interface AppointmentFormProps {
   patientId: string;
-  type: "create" | "schedule" | "cancel";
+  type: "create" | "schedule" | "cancel" | "update";
   appointment?: Appointment;
-  setOpen?: Dispatch<SetStateAction<boolean>>;
-}) => {
+}
+export const AppointmentForm = ({ patientId, type = "create", appointment }: AppointmentFormProps) => {
+
+
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +62,9 @@ export const AppointmentForm = ({
         case "cancel":
             status = "CANCELLED";
             break;
+        case "update":
+            status = "PENDING";
+            break;
         default:
             status = "PENDING";
     }
@@ -83,7 +82,47 @@ export const AppointmentForm = ({
                 description: "Appointmen created successfully",
             });
   
-            router.push( `/patients/${userId}/new-appointment/success`);
+            router.push( `/patients/${patientId}/appointments/new-appointment/success`);
+        } else {
+            toast({
+                title: "Error",
+                description: result.message,
+                variant: "destructive",
+            });
+        }      
+    } 
+      if (type === "update" && patientId) {
+        console.log("updatedAppointmen", values)
+        const result = await updateAppointment({ patientId: patientId, appointmentId: appointment?.id, status: status,  ...values });
+
+        if (result.success) {
+            form.reset()
+                toast({
+                title: "Success",
+                description: "Appointmen updated successfully",
+            });
+  
+            router.push( `/patients/${patientId}/appointments/new-appointment/success`);
+        } else {
+            toast({
+                title: "Error",
+                description: result.message,
+                variant: "destructive",
+            });
+        }      
+    } 
+      if (type === "schedule" && patientId) {
+        console.log("updatedAppointmen", values)
+        const result = await updateAppointment({ patientId: patientId, appointmentId: appointment?.id, status: status,  ...values });
+
+        if (result.success) {
+            form.reset()
+                toast({
+                title: "Success",
+                description: "Appointmen scheduled successfully",
+            });
+  
+            router.refresh();
         } else {
             toast({
                 title: "Error",
@@ -106,6 +145,9 @@ export const AppointmentForm = ({
       break;
     case "schedule":
       buttonLabel = "Schedule Appointment";
+      break;
+    case "update":
+      buttonLabel = "Update Appointment";
       break;
     default:
       buttonLabel = "Submit Apppointment";
@@ -154,7 +196,7 @@ export const AppointmentForm = ({
               name="schedule"
               label="Expected appointment date"
               showTimeSelect
-              dateFormat="MM/dd/yyyy  -  h:mm aa"
+              dateFormat="MMMM d, yyyy h:mm aa"
             />
 
             <div

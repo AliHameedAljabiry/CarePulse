@@ -91,6 +91,48 @@ export const gitInitials = (name?: string): string => {
     .map((part) => part[0])
     .join("")
     .toUpperCase()
-    .slice(0, 1); // You can use 1 or 2 depending on how many letters you want
+    .slice(0, 2); 
 };
+
+export const getDoctorImage = (
+  doctorName: string,
+  arr: { name: string; image: string }[]
+) => {
+  const doctor = arr.find(
+    (doc) => doc.name.toLowerCase() === doctorName.toLowerCase()
+  );
+  return doctor ? doctor.image : "/assets/images/default-doctor.png";
+};
+
+export const formatDate = (date: Date) => {
+        return new Date(date).toLocaleDateString('en-US', {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+export const isUpcoming = (date: Date) => {
+    return new Date(date) > new Date();
+};
+
+export const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'SCHEDULED':
+                return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+            case 'PENDING':
+                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+            case 'CANCELLED':
+                return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+            case 'COMPLETED':
+                return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+            default:
+                return 'bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300';
+        }
+    };
+
+
 

@@ -27,12 +27,12 @@ const fetcher = (url: string) => fetch(url).then(res => {
 
 const RegisterForm = () => {
 
-    const { data: currentUser, error, isLoading: userLoading} = useSWR('/api/auth/authorized-user', fetcher, {
+    const { data: currentUser} = useSWR('/api/auth/authorized-user', fetcher, {
         refreshInterval: 3000,
         revalidateOnFocus: true,
         revalidateOnReconnect: true,
     });
-        
+   
 
     const router = useRouter();
     const [isLoading, setIsLoadeing] = useState(false)
@@ -62,7 +62,7 @@ const RegisterForm = () => {
             }
 
             toast({ title: "Patient registered", description: "Patient registered successfully" });
-            router.push(`/patients/${currentUser.id}/new-appointment`); // or wherever
+            router.push(`/patients/${currentUser.id}/register`); // or wherever
         } catch (err: any) {
             console.error("onSubmit error:", err);
             toast({ title: "Unexpected error", description: err?.message ?? String(err), variant: "destructive" });

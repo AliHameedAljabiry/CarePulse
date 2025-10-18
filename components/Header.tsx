@@ -17,6 +17,11 @@ const Header = () => {
     revalidateOnFocus: true,
     shouldRetryOnError: false,
   });
+  const { data: currentPatient } = useSWR('/api/auth/current-patient', fetcher, {
+    refreshInterval: 3000,
+    revalidateOnFocus: true,
+    shouldRetryOnError: false,
+  });
 
   const pathname = usePathname();
 
@@ -28,7 +33,9 @@ const Header = () => {
                 <Image src="/assets/icons/logo-icon.svg" alt="Patient"  width={160} height={160} className=" h-10 w-fit"/>
                 <p className="text-2xl hidden sm:block font-bold dark:text-white">CarePulse</p>
             </Link>
-             {currentUser?.role === 'ADMIN' && <Link href="/admin" className="text-green-500">Admin</Link>}
+             {currentUser?.id && <Link href={`/patients/${currentPatient?.id}/register/patient-info`} className="font-bold whitespace-nowrap">Patient Info</Link>}
+             {currentUser?.id && <Link href={`/patients/${currentPatient?.id}/appointments`} className="font-bold whitespace-nowrap">My Appointment</Link>}
+             {currentUser?.role === 'ADMIN' && <Link href="/admin" className="text-green-500 font-bold">Admin</Link>}
         </div>
         <div className='flex items-center gap-10'>
            {currentUser?.id && (
@@ -40,12 +47,12 @@ const Header = () => {
                     {currentUser?.image ? (
                       <Image 
                         src={currentUser.image} 
-                        alt={currentUser.name ?? "User"} 
+                        alt={currentUser.fullName ?? "User"} 
                         fill 
                         priority
                         className='object-cover rounded-full' />
                     ) : (
-                      <AvatarFallback className="bg-amber-100 text-black text-4xl font-bold">
+                      <AvatarFallback className="bg-amber-100 text-black text-xl font-bold">
                         {gitInitials(currentUser?.fullName)}
                       </AvatarFallback>
                     )}

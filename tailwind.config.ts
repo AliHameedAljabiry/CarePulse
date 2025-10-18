@@ -67,11 +67,114 @@ const config = {
           "0%,70%,100%": { opacity: "1" },
           "20%,50%": { opacity: "0" },
         },
+        borderSpin: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        rotate: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+       
+        borderTrain: {
+          '0%': { 
+            transform: 'translateX(100%)',
+            right: '0%',
+            top: '0%'
+          },
+          '25%': { 
+            transform: 'translateX(100%)',
+            right: '100%',
+            top: '0%'
+          },
+          '50%': { 
+            transform: 'translateY(-100%)',
+            right: '100%',
+            top: '100%',
+            
+          },
+          '75%': { 
+            transform: 'translateX(100%)',
+            right: '0%',
+            top: '90%',
+            
+          },
+          '100%': { 
+            transform: 'translateY(100%)',
+            right: '0%',
+            top: '0%'
+          },
+        },
+        borderTrain1: {
+          '0%': { 
+            transform: 'translateX(100%)',
+            right: '0%',
+            top: '0%'
+          },
+          '25%': { 
+            transform: 'translateX(100%)',
+            right: '100%',
+            top: '0%'
+          },
+          '50%': { 
+            transform: 'translateY(-100%)',
+            right: '100%',
+            top: '100%',
+            
+          },
+          '75%': { 
+            transform: 'translateX(100%)',
+            right: '0%',
+            top: '90%',
+            
+          },
+          '100%': { 
+            transform: 'translateY(100%)',
+            right: '0%',
+            top: '0%'
+          },
+        },
+        borderTrain2: {
+          '0%': { 
+            transform: 'translateX(100%)',
+            right: '0%',
+            top: '0%'
+          },
+          '25%': { 
+            transform: 'translateX(100%)',
+            right: '100%',
+            top: '0%'
+          },
+          '50%': { 
+            transform: 'translateY(-100%)',
+            right: '100%',
+            top: '100%',
+            
+          },
+          '75%': { 
+            transform: 'translateX(100%)',
+            right: '0%',
+            top: '90%',
+            
+          },
+          '100%': { 
+            transform: 'translateY(100%)',
+            right: '0%',
+            top: '0%'
+          },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "caret-blink": "caret-blink 1.25s ease-out infinite",
+        'spin-slow': 'spin 3s linear infinite',
+        'border-spin': 'borderSpin 2s linear infinite',
+        'rotate': 'rotate 3s linear infinite',
+        'border-train': 'borderTrain 2s linear infinite', // ADD THIS LINE
+        'border-train1': 'borderTrain1 3s linear infinite', // ADD THIS LINE
+        'border-train2': 'borderTrain2 4s linear infinite', // ADD THIS LINE
       },
     },
   },
