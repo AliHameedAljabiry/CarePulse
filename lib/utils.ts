@@ -122,20 +122,7 @@ export const isUpcoming = (date: Date | string) => {
     return dateObj > new Date();
 };
 
-export const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'SCHEDULED':
-                return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
-            case 'PENDING':
-                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
-            case 'CANCELLED':
-                return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
-            case 'COMPLETED':
-                return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-            default:
-                return 'bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300';
-        }
-    };
+
 
 
 

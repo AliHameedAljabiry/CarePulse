@@ -1,10 +1,10 @@
 import DeleteAppointment from '@/components/DeleteAppointment';
-import { getStatusIcon } from '@/components/Functions';
+import { getStatusColor, getStatusIcon } from '@/components/Functions';
 import { Avatar } from '@/components/ui/avatar';
 import { Doctors } from '@/constants';
 import { db } from '@/database/drizzle';
 import { appointments } from '@/database/schema';
-import { cn, formatDate, getDoctorImage, getStatusColor, isUpcoming} from '@/lib/utils';
+import { cn, formatDate, getDoctorImage,  isUpcoming} from '@/lib/utils';
 import { eq } from 'drizzle-orm';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -57,7 +57,7 @@ const Appointments = async ({ params }: { params: Promise<{ userId: string }> })
 
 
     return (
-        <section className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg p-6 md:p-8 rounded-2xl min-h-[800px] border border-white/20 dark:border-slate-700/20">
+        <section className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg p-2 sm:p-8 md:p-6  rounded-2xl min-h-[800px] border border-white/20 dark:border-slate-700/20">
             {/* Header */}
             <div className="flex w-full flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
                 <div>
@@ -97,9 +97,80 @@ const Appointments = async ({ params }: { params: Promise<{ userId: string }> })
                     </Link>
                 </div>
             </div>
+            
+             {/* Summary Stats */}
+            <div className="mt-8 p-2 sm:p-16 lg:p-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 select-none">
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 transform hover:scale-105 transition-all duration-200 border border-green-200 dark:border-green-800">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+                                {patientAppointments.filter(a => a.status === 'SCHEDULED').length}
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">Scheduled</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-2xl p-6 transform hover:scale-105 transition-all duration-200 border border-yellow-200 dark:border-yellow-800">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center">
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+                                {patientAppointments.filter(a => a.status === 'PENDING').length}
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">Pending</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 transform hover:scale-105 transition-all duration-200 border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+                                {patientAppointments.filter(a => isUpcoming(a.schedule)).length}
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">Upcoming</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-gradient-to-r from-red-50 to-red-50 dark:from-red-900/20 dark:to-red-400/20 rounded-2xl p-6 transform hover:scale-105 transition-all duration-200 border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-red-300 rounded-xl flex items-center justify-center">
+                            <Image
+                                src="/assets/icons/cancelled.svg"
+                                alt="Cancelled"
+                                width={24}
+                                height={24}
+                                className="text-white"
+                            />
+                        </div>
+                        <div>
+                            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+                                {patientAppointments.filter((a: any) => a.status  === 'CANCELLED').length}
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-300">Cancelled</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Desktop Table */}
-            <div className="hidden lg:block">
+            <div className="hidden lg:block mt-5">
                 <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl p-1 mb-6">
                     <table className="w-full">
                         <thead>
@@ -148,16 +219,17 @@ const Appointments = async ({ params }: { params: Promise<{ userId: string }> })
                                     </td>
                                     <td className="py-4 px-6">
                                         <div className="flex flex-col">
-                                            <span className="font-medium text-slate-800 dark:text-slate-100 text-sm xl:text-md">
+                                            <span className="font-medium text-slate-800 dark:text-slate-100 text-xs ">
                                                 {formatDate(appointment.schedule)}
                                             </span>
                                             <span className={cn(
-                                                "text-sm mt-1",
+                                                "text-xs mt-1",
                                                 isUpcoming(appointment.schedule) 
                                                     ? "text-green-600 dark:text-green-400" 
                                                     : "text-red-400 dark:text-red-400"
                                             )}>
-                                                {isUpcoming(appointment.schedule) ? 'Upcoming' : 'Past'}
+                                               {isUpcoming(appointment.schedule) && appointment.status === 'SCHEDULED' ? 'Upcoming' 
+                                                :!isUpcoming(appointment.schedule)  ? 'Past' :""}
                                             </span>
                                         </div>
                                     </td>
@@ -171,14 +243,15 @@ const Appointments = async ({ params }: { params: Promise<{ userId: string }> })
                                             {appointment.note || 'No notes'}
                                         </span>
                                     </td>
-                                    <td className="py-4 px-6">
+                                    <td className="py-4 px-6 flex flex-col gap-2">
                                         <div className={cn(
-                                            "inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium",
+                                            "inline-flex items-center w-fit space-x-2 px-3 py-1 rounded-full text-xs font-medium",
                                             getStatusColor(appointment.status)
                                         )}>
                                             {getStatusIcon(appointment.status)}
                                             <span>{appointment.status}</span>
                                         </div>
+                                        <span className='text-left text-xs '>{appointment.cancellationReason}</span>
                                     </td>
                                     <td className="py-4 px-6">
                                         <div className="flex space-x-2   transition-opacity duration-200">
@@ -189,7 +262,7 @@ const Appointments = async ({ params }: { params: Promise<{ userId: string }> })
                                                     </svg>
                                                 </button>       
                                             </Link>
-                                            <DeleteAppointment appointmentId={appointment.id}  />
+                                            <DeleteAppointment appointmentId={appointment.id}/>
                                         </div>
                                     </td>
                                 </tr>
@@ -200,7 +273,7 @@ const Appointments = async ({ params }: { params: Promise<{ userId: string }> })
             </div>
 
             {/* Mobile Cards */}
-            <div className="lg:hidden space-y-4">
+            <div className="lg:hidden space-y-4 px-2 sm:px-14 mt-10">
                 {patientAppointments.map((appointment) => (
                     <div 
                         key={appointment.id}
@@ -229,32 +302,34 @@ const Appointments = async ({ params }: { params: Promise<{ userId: string }> })
                                         )}
                                     </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-semibold text-slate-800 dark:text-slate-100">
-                                        {appointment.doctor}
-                                    </h3>
-                                    <div className={cn(
-                                        "inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium mt-1",
-                                        getStatusColor(appointment.status)
-                                    )}>
-                                        {getStatusIcon(appointment.status)}
-                                        <span>{appointment.status}</span>
-                                    </div>
-                                </div>
+                                <h3 className="font-semibold text-slate-800 dark:text-slate-100">
+                                    {appointment.doctor}
+                                </h3>
+                                
                             </div>
                         </div>
 
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
-                                <span className="text-sm text-slate-600 dark:text-slate-400">Schedule</span>
-                                <span className="font-medium text-slate-800 dark:text-slate-100 text-right">
+                                <span className="text-sm flex text-slate-600 dark:text-slate-400">Schedule
+                                <p className={cn(
+                                    "text-xs mt-1 ml-1",
+                                    isUpcoming(appointment.schedule) 
+                                        ? "text-green-600 dark:text-green-400" 
+                                        : "text-red-400 dark:text-red-400"
+                                )}>
+                                    {isUpcoming(appointment.schedule) && appointment.status === 'SCHEDULED' ? '(Upcoming)' 
+                                    :!isUpcoming(appointment.schedule)  ? '(Past)' :""}
+                                </p>
+                                </span>
+                                <span className="font-medium text-slate-800 dark:text-slate-100 text-right text-xs">
                                     {formatDate(appointment.schedule)}
                                 </span>
                             </div>
 
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-slate-600 dark:text-slate-400">Reason</span>
-                                <span className="font-medium text-slate-800 dark:text-slate-100 text-right">
+                                <span className="font-medium text-slate-800 dark:text-slate-100 text-right text-sm">
                                     {appointment.reason}
                                 </span>
                             </div>
@@ -266,69 +341,31 @@ const Appointments = async ({ params }: { params: Promise<{ userId: string }> })
                                 </span>
                             </div>
                         </div>
-
-                        <div className="flex justify-end space-x-2 mt-4 pt-4 border-t border-slate-200 dark:border-slate-600">
-                            <Link href={`update-appointment/${appointment.id}`} >
-                                <button className="px-4 py-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 text-sm font-medium">
-                                    Reschedule
-                                </button>
-                            </Link>
-                            <DeleteAppointment appointmentId={appointment.id}  />
+                        <div className='flex items-center justify-between  border-t border-slate-200 dark:border-slate-600 mt-2 pt-4'>
+                            <div className='flex flex-col justify-end gap-2 w-fit  '>                              
+                                <div className={cn(
+                                    "inline-flex items-center w-fit space-x-1 px-2 py-1 rounded-full text-xs font-medium mt-1",
+                                    getStatusColor(appointment.status)
+                                )}>
+                                    {getStatusIcon(appointment.status)}
+                                    <span>{appointment.status}</span>
+                                </div>
+                                {appointment.cancellationReason !== null && <span className='text-xs '>{appointment.cancellationReason}</span>}
+                            </div>
+                            <div className="flex justify-end space-x-2  ">
+                                <Link href={`update-appointment/${appointment.id}`} >
+                                    <button className="px-4 py-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg transition-all duration-200 text-sm font-medium">
+                                        Reschedule
+                                    </button>
+                                </Link>
+                                <DeleteAppointment appointmentId={appointment.id}  />
+                            </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* Summary Stats */}
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 transform hover:scale-105 transition-all duration-200 border border-green-200 dark:border-green-800">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                                {patientAppointments.filter(a => a.status === 'SCHEDULED').length}
-                            </p>
-                            <p className="text-sm text-slate-600 dark:text-slate-300">Scheduled</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 rounded-2xl p-6 transform hover:scale-105 transition-all duration-200 border border-yellow-200 dark:border-yellow-800">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                                {patientAppointments.filter(a => a.status === 'PENDING').length}
-                            </p>
-                            <p className="text-sm text-slate-600 dark:text-slate-300">Pending</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 transform hover:scale-105 transition-all duration-200 border border-blue-200 dark:border-blue-800">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                                {patientAppointments.filter(a => isUpcoming(a.schedule)).length}
-                            </p>
-                            <p className="text-sm text-slate-600 dark:text-slate-300">Upcoming</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+           
         </section>
     );
 }

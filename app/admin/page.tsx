@@ -3,7 +3,7 @@ import Loading from '@/app/loading';
 import { patient } from '@/database/schema';
 import React, { useState } from 'react'
 import useSWR, { mutate } from 'swr';
-import { cn, formatDate, formatDateTime, getDoctorImage, getStatusColor, gitInitials, isUpcoming } from '@/lib/utils';
+import { cn, formatDate, formatDateTime, getDoctorImage,  gitInitials, isUpcoming } from '@/lib/utils';
 import Image from 'next/image';
 import { Doctors } from '@/constants';
 import Link from 'next/link';
@@ -11,7 +11,7 @@ import DeleteAppointment from '@/components/DeleteAppointment';
 import { get } from 'http';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { getStatusIcon } from '@/components/Functions';
+import { getStatusColor, getStatusIcon } from '@/components/Functions';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { AppointmentForm } from '@/components/forms/AppointmentForm';
 
@@ -41,10 +41,14 @@ const PatientTable = () => {
 
     const [openForm, setOpenForm] = useState(false);
     const [selectedPatientId, setSelectedPatientId] = useState('');
+    const [formType, setFormType] = useState('');
+    const [formTitle, setFormTitle] = useState('');
     const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
 
     if (isLoading) return <div><Loading/></div>;
     if (error) return <div className='dark:text-white'>Error loading users: {error.message}</div>
+
+    console.log("Appointments Data:", data);
 
     
 
@@ -64,82 +68,50 @@ const PatientTable = () => {
         );
     }
 
-    console.log("Patient data:", data);
+
    
-  
-  const handleSchedule = (appointment: any, patientId: string) => {
-      console.log("Setting schedule for patientId:", patientId, "appointment:", appointment);
-      setSelectedPatientId(patientId);
-      setSelectedAppointment(appointment);
-      setOpenForm(true);
-  }
+    const handleSchedule = (appointment: any, patientId: string, formType: string, formTitle: string) => {
+        setSelectedPatientId(patientId);
+        setSelectedAppointment(appointment);
+        setOpenForm(true);
+        setFormType(formType);
+        setFormTitle(formTitle)
+    }
    
-    
+    // Function to handle successful form submission
+    const handleFormSuccess = () => {
+        setOpenForm(false); 
+        mutate(); 
+    }
     return (
       <div className=' relative '>
             {/* Dialog for Appointment Form */}
             <Dialog open={openForm} onOpenChange={setOpenForm}>
                 <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-inherit">
                   <DialogTitle className='dark:text-white'>
-                      Schedule Appointment
+                      {formTitle}
                   </DialogTitle>
                     <AppointmentForm
-                        type="schedule"
+                        type={formType}
                         appointment={selectedAppointment}
                         patientId={selectedPatientId}
+                        onSuccess={handleFormSuccess} 
                     />
                 </DialogContent>
             </Dialog>
-          <section className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg p-2 sm:p-8 md:p-6 rounded-2xl min-h-[800px] border border-white/20 dark:border-slate-700/20">
-              {/* Header */}
-              <div className='flex items-center justify-between border-b pb-4 mb-4 select-none'>
-                  <Link href="/" className='flex items-center gap-2'>
-                    <Image src="/assets/icons/logo-icon.svg" alt="Patient"  width={160} height={160} className=" h-10 w-fit"/>
-                    <p className="text-2xl hidden sm:block font-bold dark:text-white">CarePulse</p>
-                  </Link>
-
-                  {currentUser?.id && (
-                    <Link href='/my-profile' className={cn('text-lg font-medium hover:text-primary flex items-center gap-2')}>
-                      <div className='w-12 h-12 rounded-full '>
-                        <Avatar className='w-full h-full border-4 dark:border-gray-700  dark:shadow-[inset_0_0_10px_rgba(255,255,255,0.1),0_0_25px_rgba(0,0,0,0.7)]'>
-                          {currentUser?.image ? (
-                            <Image 
-                              src={currentUser.image} 
-                              alt={currentUser.fullName ?? "User"} 
-                              fill 
-                              priority
-                              className='object-cover rounded-full' />
-                          ) : (
-                            <AvatarFallback className="bg-amber-100 text-black text-xl font-bold">
-                              {gitInitials(currentUser?.fullName)}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                      </div>
-                      <h1 className='text-lg text-green-500 font-bold mt-1'>Admin</h1>
-                    </Link>
-                  )}
-              </div>
-              <div className="flex w-full flex-col lg:flex-row lg:items-center lg:justify-between mb-8 '">
-                  <div>
-                      <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-700 bg-clip-text text-transparent select-none">
-                          Welcome, Admin
-                      </h1>
-                      <p className="text-slate-600 dark:text-slate-300 mt-2 select-none">
-                          Manage and view your scheduled medical appointments
-                      </p>
-                  </div>
-                  <div className="flex items-center space-x-4 mt-4 lg:mt-0">
-                      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg px-4 py-2 transform hover:scale-105 transition-transform duration-200">
-                          <span className="text-sm text-blue-600 dark:text-blue-300 font-medium select-none">
-                              Total: {data.length}
-                          </span>
-                      </div>   
-                  </div>
-              </div>
-              
+          <section className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg p-2 sm:px-8 sm:py-4 md:px-6  rounded-2xl min-h-[400px] max-h-[800px]  border border-white/20 dark:border-slate-700/20 ">
+             <div className='flex items-center justify-between gap-5 px-3'>
+                <h1 className='text-xl font-bold'>All Appointments</h1>
+                <div className="flex items-center space-x-4 mt-4 lg:mt-0">
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg px-4 py-2 transform hover:scale-105 transition-transform duration-200">
+                    <span className="text-sm text-blue-600 dark:text-blue-300 font-medium select-none">
+                        Total: {data.length}
+                    </span>
+                </div>   
+            </div>
+             </div>
               {/* Summary Stats */}
-              <div className="mt-8 p-2 sm:p-16 lg:p-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 select-none'">
+              <div className="mt-2 p-2 sm:p-16 lg:p-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 select-none'">
                   <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 transform hover:scale-105 transition-all duration-200 border border-green-200 dark:border-green-800">
                       <div className="flex items-center space-x-3">
                           <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
@@ -203,14 +175,14 @@ const PatientTable = () => {
                               <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">
                                   {data.filter((a: any) => a.appointments.status  === 'CANCELLED').length}
                               </p>
-                              <p className="text-sm text-slate-600 dark:text-slate-300">Canselled</p>
+                              <p className="text-sm text-slate-600 dark:text-slate-300">Cancelled</p>
                           </div>
                       </div>
                   </div>
               </div>
 
               {/* Desktop Table */}
-              <div className="hidden lg:block mt-10 select-none">
+              <div className="hidden lg:block mt-3 select-none max-h-[500px]  overflow-y-auto remove-scrollbar">
                   <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl p-1 mb-6">
                       <table className="w-full">
                           <thead className='border-b'>
@@ -287,7 +259,7 @@ const PatientTable = () => {
                                       <td className="py-4 px-2">
                                           <div className="flex flex-col">
                                               <span className="font-medium text-slate-800 dark:text-slate-100 text-xs">
-                                                  {formatDateTime(e.appointments?.schedule).dateTime}
+                                                  {formatDate(e.appointments?.schedule)}
                                               </span>
                                               <span className={cn(
                                                   "text-sm mt-1",
@@ -295,7 +267,8 @@ const PatientTable = () => {
                                                       ? "text-green-600 dark:text-green-400" 
                                                       : "text-red-400 dark:text-red-400"
                                               )}>
-                                                  {isUpcoming(e.appointments.schedule) ? 'Upcoming' : 'Past'}
+                                                  {isUpcoming(e.appointments.schedule) && e.appointments.status === 'SCHEDULED' ? 'Upcoming' 
+                                                  :!isUpcoming(e.appointments.schedule)  ? 'Past' :""}
                                               </span>
                                           </div>
                                       </td>
@@ -309,27 +282,37 @@ const PatientTable = () => {
                                               {e.appointments.note || 'No notes'}
                                           </span>
                                       </td>
-                                      <td className="py-4 px-2">
+                                      <td className="py-4 px-2 flex flex-col">
                                           <div className={cn(
-                                              "inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium",
+                                              "inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium w-fit",
                                               getStatusColor(e.appointments.status)
                                           )}>
                                               {getStatusIcon(e.appointments.status)}
                                               <span>{e.appointments.status}</span>
                                           </div>
+                                              <span className='text-left text-xs mt-2'>{e.appointments.cancellationReason}</span>
                                       </td>
                                       <td className="py-4 px-2">
                                           <div className="flex space-x-2   transition-opacity duration-200">    
                                               <button 
                                                   type='button' 
                                                   title='Scheduel' 
-                                                  className="p-2 text-sm hover:bg-green-100 text-green-800 hover:dark:bg-green-900/30 dark:text-green-300 rounded-lg transition-all duration-200 transform hover:scale-110"
-                                                  onClick={() => handleSchedule(e.appointments, e.patient.id)}
+                                                  className="p-2 text-sm bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 rounded-lg transition-all duration-200 transform hover:scale-110"
+                                                  onClick={() => handleSchedule(e.appointments, e.patient.id, "schedule", "Schedule Appointment")}
                                               >
                                                   Scheduel
+                                              </button>  
+
+                                              <button 
+                                                  type='button' 
+                                                  title='Scheduel' 
+                                                  className="p-2 text-sm bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-lg transition-all duration-200 transform hover:scale-110"
+                                                  onClick={() => handleSchedule(e.appointments, e.patient.id, "cancel", "Cancel Appointment")}
+                                              >
+                                                  Cancel
                                               </button>       
                                               
-                                              <DeleteAppointment appointmentId={e.appointments.id}  />
+                                              
                                           </div>
                                       </td>
                                   </tr>
@@ -405,7 +388,17 @@ const PatientTable = () => {
 
                           <div className="space-y-3">
                               <div className="flex justify-between items-center">
-                                  <span className="text-sm text-slate-600 dark:text-slate-400">Schedule</span>
+                                  <span className="text-sm flex text-slate-600 dark:text-slate-400">Schedule
+                                    <p className={cn(
+                                                  "text-xs mt-1 ml-1",
+                                                  isUpcoming(e.appointments.schedule) 
+                                                      ? "text-green-600 dark:text-green-400" 
+                                                      : "text-red-400 dark:text-red-400"
+                                              )}>
+                                        {isUpcoming(e.appointments.schedule) && e.appointments.status === 'SCHEDULED' ? '(Upcoming)' 
+                                        :!isUpcoming(e.appointments.schedule)  ? '(Past)' :""}
+                                    </p>
+                                  </span>
                                   <span className="font-medium text-slate-800 dark:text-slate-100 text-right text-xs">
                                       {formatDate(e.appointments.schedule)}
                                   </span>
@@ -427,20 +420,34 @@ const PatientTable = () => {
                           </div>
 
                           <div className="flex justify-between space-x-2 mt-4 pt-4 border-t border-slate-200 dark:border-slate-600">
-                              <div className={cn(
-                                    "inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium mt-1",
-                                    getStatusColor(e.appointments.status)
-                                )}>
-                                    {getStatusIcon(e.appointments.status)}
-                                    <span>{e.appointments.status}</span>
-                              </div>
-                              <div className='flex justify-between'>
-                                <Link href={`update-appointment/${e.appointments.id}`} >
-                                    <button className="px-4 py-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 text-sm font-medium">
-                                        Reschedule
-                                    </button>
-                                </Link>
-                                <DeleteAppointment appointmentId={e.appointments.id}  />
+                            <div className='flex flex-col gap-2'>
+                                <div className={cn(
+                                        "inline-flex items-center w-fit space-x-1 px-2 py-1 rounded-full text-xs font-medium mt-1",
+                                        getStatusColor(e.appointments.status)
+                                    )}>
+                                        {getStatusIcon(e.appointments.status)}
+                                        <span>{e.appointments.status}</span>
+                                </div>
+                                <span className='text-left text-xs'>{e.appointments.cancellationReason}</span>
+                            </div>
+                              <div className='flex justify-between gap-2 h-fit items-center'>
+                                <button 
+                                    type='button' 
+                                    title='Scheduel' 
+                                    className="p-2 text-sm bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 rounded-lg transition-all duration-200 transform hover:scale-110"
+                                    onClick={() => handleSchedule(e.appointments, e.patient.id, "schedule", "Schedule Appointment")}
+                                >
+                                    Scheduel
+                                </button>  
+
+                                <button 
+                                    type='button' 
+                                    title='Scheduel' 
+                                    className="p-2 text-sm bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-lg transition-all duration-200 transform hover:scale-110"
+                                    onClick={() => handleSchedule(e.appointments, e.patient.id, "cancel", "Cancel Appointment")}
+                                >
+                                    Cancel
+                                </button>       
                               </div>
 
                           </div>

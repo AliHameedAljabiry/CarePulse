@@ -96,3 +96,65 @@ export const FIELD_TYPES = {
   confirmPassword: "password",
   phoneNumber: "text",
 };
+
+
+export const adminSideBarLinks = [
+  {
+    img: "/icons/admin/home.png",
+    route: "/admin",
+    text: "Home",
+  },
+  {
+    img: "/icons/admin/users.png",
+    route: "/admin/users",
+    text: "All Users",
+  },
+  {
+    img: "/icons/admin/docs.png",
+    route: "/admin/docs",
+    text: "All Docs",
+  },
+  
+  {
+    img: "/icons/admin/folder.svg",
+    route: "/admin/projects",
+    text: "All Projects",
+  },
+  
+];
+
+export const Countries = [
+  { name: "Afghanistan", code: "AF"},
+  { name: "Albania", code: "AL"},
+  { name: "Algeria", code: "DZ"},
+  { name: "Argentina", code: "AR"},
+  { name: "Australia", code: "AU"},
+  { name: "Brazil", code: "BR"},
+  { name: "Canada", code: "CA"},
+  { name: "China", code: "CN"},
+  { name: "Egypt", code: "EG"},
+  { name: "France", code: "FR"},
+  { name: "Germany", code: "DE"},
+  { name: "India", code: "IN"},
+  { name: "Indonesia", code: "ID"},
+  { name: "Iraq", code: "IQ"},
+  { name: "Italy", code: "IT"},
+  { name: "Japan", code: "JP"},
+  { name: "Jordan", code: "JO"},
+  { name: "Kuwait", code: "KW"},
+  { name: "Lebanon", code: "LB"},
+  { name: "Malaysia", code: "MY"},
+  { name: "Mexico", code: "MX"},
+  { name: "Pakistan", code: "PK"},
+  { name: "Russia", code: "RU"},
+  { name: "Saudi Arabia", code: "SA"},
+  { name: "South Africa", code: "ZA"},
+  { name: "South Korea", code: "KR"},
+  { name: "Spain", code: "ES"},
+  { name: "Turkey", code: "TR"},
+  { name: "United Arab Emirates", code: "AE"},
+  { name: "United Kingdom", code: "GB"},
+  { name: "United States", code: "US"},
+]
+
+export const StatusOptions = ["OPEN", "CLOSED", "MAINTENANCE", "VACATION"]

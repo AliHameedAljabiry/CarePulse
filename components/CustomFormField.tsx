@@ -16,9 +16,11 @@ import { Textarea } from './ui/textarea'
 import { Check, Eye, EyeOff } from 'lucide-react'
 import { Checkbox } from './ui/checkbox'
 import { Button } from './ui/button'
+import IdentificationDocument from './ImagekitDisplyer'
 
 
 
+const libraries = ['places'];
 
 
 interface CustomProps {
@@ -34,6 +36,8 @@ interface CustomProps {
     dateFormat?: string,
     showTimeSelect?: boolean,
     children?: React.ReactNode, 
+    defaultID?: string | null,
+    sceletonType?: string
     renderSkeleton?: (field: any) => React.ReactNode
    
  
@@ -42,9 +46,10 @@ interface CustomProps {
 
 
 const RenderField = ({ field, props}: {field: any, props: CustomProps}) => {
-    const { control, name, label, placeholder, type, iconSrc, iconAlt, disabled, required, dateFormat, showTimeSelect, children, renderSkeleton } = props;
+    const { control, name, label, placeholder, type, iconSrc, iconAlt, disabled, defaultID , sceletonType, required, dateFormat, showTimeSelect, children, renderSkeleton } = props;
     const [showPassword, setShowPassword] = useState(false);
 
+  
     switch (type) {
         case FormFieldType.INPUT:
             return (
@@ -74,6 +79,7 @@ const RenderField = ({ field, props}: {field: any, props: CustomProps}) => {
                     </Button>
                 </div>
             )
+       
         case FormFieldType.PHONE_INPUT:
             return (
                 <FormControl className='bg-[#fafafa] dark:border-dark-500 dark:bg-dark-400   shadow '>
@@ -105,8 +111,8 @@ const RenderField = ({ field, props}: {field: any, props: CustomProps}) => {
                         <DatePicker 
                             selected={field.value} 
                             onChange={(date) => field.onChange(date)}
-                            dateFormat={dateFormat ?? 'MM/dd/yyyy h:mm aa'} 
-                            showTimeSelect={showTimeSelect ?? true} 
+                            dateFormat={dateFormat} 
+                            showTimeSelect={showTimeSelect ?? false} 
                             showTimeSelectOnly={false}
                             placeholderText={placeholder}
                             wrapperClassName='date-picker'
@@ -123,7 +129,11 @@ const RenderField = ({ field, props}: {field: any, props: CustomProps}) => {
 
         case FormFieldType.SKELETON:
             return (
-                renderSkeleton ? renderSkeleton(field) : null
+                <div className='flex gap-5 flex-col xl:flex-row'>
+                    {defaultID !== null && sceletonType === "ID" && <IdentificationDocument documentUrl={defaultID as any}/>}
+                    {renderSkeleton ? renderSkeleton(field) : null}
+                </div>
+                
             )
 
         case FormFieldType.SELECT:
@@ -168,7 +178,7 @@ const RenderField = ({ field, props}: {field: any, props: CustomProps}) => {
     }
 }
 const CustomFormField = ({...props}: CustomProps) => {
-    const { control, name, label, placeholder, type, iconSrc, iconAlt, disabled, required, dateFormat, showTimeSelect, children, renderSkeleton } = props;
+    const { control, name, label, placeholder, type, iconSrc,defaultID, iconAlt, disabled, required, dateFormat, showTimeSelect, children, renderSkeleton } = props;
   return (
     <FormField control={control} name={name} render={({ field }) => (
         <FormItem className='flex-1'>
@@ -186,46 +196,3 @@ const CustomFormField = ({...props}: CustomProps) => {
 
 export default CustomFormField
 
-/**
- * background: linear-gradient(45deg, #4D62E5 0%, #87DDEE 45.31%, #B6F09C 100%);
-
- npm install react-phone-number-input --save --legacy-peer-deps
- npm install react-datepicker --save --legacy-peer-deps
-
-
- import { useRef } from "react"
- case FormFieldType.DATE_PICKER: {
-            const inputRef = useRef<HTMLInputElement | null>(null)
-
-            return (
-                <div className="relative min-h-14 max-h-14">
-                <Input
-                    ref={inputRef}
-                    type="date"
-                    name={name}
-                    value={field.value ? new Date(field.value).toISOString().substring(0, 10) : ""}
-                    onChange={(e) => field.onChange(new Date(e.target.value))}
-                    className="date-picker min-h-14 bg-dark-400 pr-12"
-                />
-                <Image
-                    src="/assets/icons/calendar.svg"
-                    alt="calendar"
-                    width={28}
-                    height={28}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-                    onClick={() => {
-                    if (inputRef.current) {
-                        // Try native showPicker() (Chromium browsers)
-                        if (typeof inputRef.current.showPicker === "function") {
-                        inputRef.current.showPicker()
-                        } else {
-                        // Fallback: just focus the input
-                        inputRef.current.focus()
-                        }
-                    }
-                    }}
-                />
-                </div>
-              )
-            }
- */

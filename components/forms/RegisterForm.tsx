@@ -18,29 +18,55 @@ import { useRouter } from 'next/navigation'
 import useSWR from 'swr'
 import { registerPatient } from '@/lib/actions/createPatient'
 import { toast } from "@/hooks/use-toast";
+import { formatDateTime } from '@/lib/utils'
+import { updatePatient } from '@/lib/actions/updatePatient'
 
 const fetcher = (url: string) => fetch(url).then(res => {
     if (!res.ok) throw new Error('Network response was not ok');
     return res.json()
 });
 
+interface PatientFormProps {
+  type: "create" | "update" ;
+  patient?: any;
 
-const RegisterForm = () => {
+}
+
+const RegisterForm = ({patient, type}: PatientFormProps) => {
 
     const { data: currentUser} = useSWR('/api/auth/authorized-user', fetcher, {
         refreshInterval: 3000,
         revalidateOnFocus: true,
         revalidateOnReconnect: true,
     });
-   
-
+    
     const router = useRouter();
     const [isLoading, setIsLoadeing] = useState(false)
     const form = useForm<z.infer<typeof PatientFormValidation>>({
         resolver: zodResolver(PatientFormValidation),
             defaultValues: {
-                ...PatientFormDefaultValues,
-                 phone: "",   
+                birthDate: patient
+                    ? new Date(patient?.birthDate!)
+                    : new Date(Date.now()),
+                gender: patient?.gender || "Male" as Gender,
+                address: patient?.address || "",
+                occupation: patient?.occupation || "",
+                emergencyContactName: patient?.emergencyContactName || "",
+                emergencyContactNumber: patient?.emergencyContactNumber || "",
+                primaryPhysician: patient?.primaryPhysician || "",
+                insuranceProvider: patient?.insuranceProvider || "",
+                insurancePolicyNumber: patient?.insurancePolicyNumber || "",
+                allergies: patient?.allergies || "",
+                currentMedication: patient?.currentMedication || "",
+                familyMedicalHistory: patient?.familyMedicalHistory || "",
+                pastMedicalHistory: patient?.pastMedicalHistory || "",
+                identificationType: patient?.identificationType || "Birth Certificate",
+                identificationNumber: patient?.identificationNumber || "",
+                identificationDocument: [],
+                treatmentConsent: false,
+                disclosureConsent: false,
+                privacyConsent: false,
+                phone: currentUser?.phoneNumber !== "-" ? currentUser?.phoneNumber : "",
             },     
     })
 
@@ -51,18 +77,32 @@ const RegisterForm = () => {
             const payload = {
                 ...values,
                 userId: currentUser.id,
-                phone: values.phone ?? undefined, // optional phone field
+                phone: values.phone ?? undefined, 
+                patientId: patient.id
             };
+            if (type === "create") {
 
-            const res = await registerPatient(payload);
-
-            if (!res.success) {
-                toast({ title: "Error", description: res.error ?? "Failed to register patient", variant: "destructive" });
-                return;
+                const res = await registerPatient(payload);
+    
+                if (!res.success) {
+                    toast({ title: "Error", description: res.error ?? "Failed to register patient", variant: "destructive" });
+                    return;
+                }
+    
+                toast({ title: "Patient registered", description: "Patient registered successfully" });
+                router.push(`/patients/${currentUser.id}/register`);
+                
+            } else if (type === "update") {
+                const res = await updatePatient(payload);
+    
+                if (!res.success) {
+                    toast({ title: "Error", description: res.error ?? "Failed to update patient", variant: "destructive" });
+                    return;
+                }
+    
+                toast({ title: "Patient registered", description: "Patient updated successfully" });
+                router.push(`/patients/${currentUser.id}/register`); 
             }
-
-            toast({ title: "Patient registered", description: "Patient registered successfully" });
-            router.push(`/patients/${currentUser.id}/register`); // or wherever
         } catch (err: any) {
             console.error("onSubmit error:", err);
             toast({ title: "Unexpected error", description: err?.message ?? String(err), variant: "destructive" });
@@ -72,8 +112,10 @@ const RegisterForm = () => {
         
 
     }
+
+
   return (
-   <div className='dark:text-white '>
+   <div className='dark:text-white'>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit) } className='space-y-12 flex-1 pb-10'>
                 <section className='space-y-4'>
@@ -88,7 +130,7 @@ const RegisterForm = () => {
                     <div className='mb-9 space-y-1'>
                         <h2 className='sub-header'>Personal information</h2>
                     </div>
-                    {!currentUser?.phoneNumber || currentUser?.phoneNumber === "-" &&
+                    {!currentUser?.phoneNumber || currentUser?.phoneNumber === "-" || type === "update" &&
                         <div className='w-full md:w-1/2'>
                             <CustomFormField
                                 type={FormFieldType.PHONE_INPUT}
@@ -112,6 +154,7 @@ const RegisterForm = () => {
                             type={FormFieldType.SKELETON}
                             label='Gender'
                             name='gender'
+                            sceletonType="gender"
                             control={form.control}
                             renderSkeleton={(field) => (
                                 <FormControl>
@@ -273,6 +316,8 @@ const RegisterForm = () => {
                         type={FormFieldType.SKELETON}
                         label="Scanned copy of the identification document"
                         name="identificationDocument"
+                        defaultID={patient ? patient.identificationDocument : null}
+                        sceletonType="ID"
                         control={form.control}
                         renderSkeleton={(field) => (
                             <FormControl>
@@ -316,7 +361,9 @@ const RegisterForm = () => {
 
                 </section>
                    
-                <SubmitButton isLoading={isLoading }>Get started</SubmitButton>
+                <SubmitButton isLoading={isLoading }>
+                    {type === "create" ? "Get started" : "Update Patient Information"}
+                </SubmitButton>
                 
             </form>
         </Form>

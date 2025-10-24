@@ -53,6 +53,15 @@ select:-webkit-autofill {
   transition: background-color 5000s ease-in-out 0s; /* hack: prevents yellow flash */
 }
 
+.leaflet-container {
+  height: 400px;
+  width: 100%;
+}
+
+.leaflet-marker-icon {
+  border: none !important;
+  background: transparent !important;
+}
 
 @layer components {
   .sign-out {
@@ -70,6 +79,11 @@ select:-webkit-autofill {
   .progress {
     @apply rounded-full bg-green-800 p-0.5 text-center  text-[8px] font-bold leading-none ;
   }
+
+  .link {
+    @apply text-sm sm:text-lg hidden sm:block whitespace-nowrap  text-gray-700 dark:text-gray-100 font-medium hover:text-blue-100 hover:underline underline-offset-8 dark:hover:text-[#cfab34]
+  }
+
 
 }
 
@@ -119,23 +133,7 @@ select:-webkit-autofill {
 
 @layer utilities {
   
-  /* ===== UTILITIES */
-  .sidebar {
-    @apply remove-scrollbar w-full max-w-72 flex-col overflow-auto bg-black-800 px-7 py-10;
-  }
-
-  .left-sidebar {
-    @apply hidden lg:flex;
-  }
-
-  .right-sidebar {
-    @apply hidden xl:flex;
-  }
-
-  .clip-text {
-    @apply bg-clip-text text-transparent;
-  }
-
+  
   .bg-image {
     @apply bg-black-900 bg-light-rays bg-cover bg-no-repeat;
   }
@@ -149,7 +147,7 @@ select:-webkit-autofill {
   }
 
   .container {
-    @apply relative flex-1 overflow-y-auto px-[5%];
+    @apply relative flex-1 overflow-y-auto ;
   }
 
   .sub-container {

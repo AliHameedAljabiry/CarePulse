@@ -6,7 +6,10 @@ import { Doctors } from '@/constants';
 import { getDoctorImage, gitInitials } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Image from 'next/image';
-import IdentificationDocument from '@/components/IdentificationDocument';
+import IdentificationDocument from '@/components/ImagekitDisplyer';
+import GoBack from '@/components/GoBack';
+import Link from 'next/link';
+import ImagekitDisplyer from '@/components/ImagekitDisplyer';
 
 const PatientInfo = async ({ params }: { params: Promise<{ userId: string }> }) => {
   const patientId = (await params).userId;
@@ -53,13 +56,37 @@ const PatientInfo = async ({ params }: { params: Promise<{ userId: string }> }) 
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50  dark:bg-[#0d1117] dark:from-[#1b232e] dark:to-[#080b0f] p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            Patient Information
-          </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-300">
-            Comprehensive medical profile and details
-          </p>
+        <div className="flex flex-row items-center justify-between">
+          <GoBack/>
+          <div className='text-center mb-12'>
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+              Patient Information
+            </h1>
+            <p className="text-lg text-slate-600 dark:text-slate-300">
+              Comprehensive medical profile and details
+            </p>
+          </div>
+          <Link 
+              href={`../update-patient`} 
+              className="relative bg-blue-50 dark:bg-blue-900/20 rounded-lg px-4 py-2 group overflow-hidden hover:scale-105 transition-transform duration-900"
+              >
+              <div className="absolute inset-0 rounded-lg overflow-hidden">
+                  <div className="absolute w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-border-train opacity-100 transition-opacity duration-900 shadow-lg"></div>
+              </div>
+              <div className="absolute inset-0 rounded-lg overflow-hidden">
+                  <div className="absolute w-2 h-2 bg-gradient-to-r from-blue-500 to-lime-500 rounded-full animate-border-train1 opacity-100 transition-opacity duration-900 shadow-lg"></div>
+              </div>
+              <div className="absolute inset-0 rounded-lg overflow-hidden">
+                  <div className="absolute w-2 h-2 bg-gradient-to-r from-blue-500 to-amber-400 rounded-full animate-border-train2 opacity-100 transition-opacity duration-900 shadow-lg"></div>
+              </div>
+              
+              <span className="relative text-sm text-blue-600 dark:text-blue-300 font-medium flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                  Update Info
+              </span>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -176,7 +203,7 @@ const PatientInfo = async ({ params }: { params: Promise<{ userId: string }> }) 
                     </label>
                     <div className="relative group">
                       <div className="w-full h-fit bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 rounded-2xl flex items-center justify-center overflow-hidden transform group-hover:scale-105 transition-transform duration-300">                      
-                        <IdentificationDocument documentUrl={pat.identificationDocument as any}/>
+                        <ImagekitDisplyer documentUrl={pat.identificationDocument as any} text={"No Identification Document Uploaded"}/>
                       </div>
                     </div>
                   </div>

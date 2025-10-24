@@ -29,6 +29,34 @@
       "when": 1759172505197,
       "tag": "0003_burly_khan",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1761158547598,
+      "tag": "0004_amusing_wendigo",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1761208187499,
+      "tag": "0005_faithful_red_ghost",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1761224547828,
+      "tag": "0006_little_sleepwalker",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1761224956687,
+      "tag": "0007_ancient_dormammu",
+      "breakpoints": true
     }
   ]
 }

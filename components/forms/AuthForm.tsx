@@ -31,6 +31,7 @@ export enum FormFieldType {
    SELECT = 'select',
    SKELETON = 'skeleton',
    PASSWORD = 'password',
+   LOCATION = 'location'
 }
 
 interface Props<T extends FieldValues> {

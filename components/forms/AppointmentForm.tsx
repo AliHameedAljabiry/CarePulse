@@ -21,13 +21,15 @@ import { Form } from "../ui/form";
 import { FormFieldType } from "./AuthForm";
 import { createAppointment } from "@/lib/actions/createAppointment";
 import { updateAppointment } from "@/lib/actions/updateAppointment";
+import { cancelAppointment } from "@/lib/actions/cancelAppointment";
 
 interface AppointmentFormProps {
   patientId: string;
-  type: "create" | "schedule" | "cancel" | "update";
+  type: "create" | "schedule" | "cancel" | "update" | string;
   appointment?: Appointment;
+  onSuccess?: () => void; 
 }
-export const AppointmentForm = ({ patientId, type = "create", appointment }: AppointmentFormProps) => {
+export const AppointmentForm = ({ patientId, type = "create", appointment, onSuccess  }: AppointmentFormProps) => {
 
 
 
@@ -81,7 +83,7 @@ export const AppointmentForm = ({ patientId, type = "create", appointment }: App
                 title: "Success",
                 description: "Appointmen created successfully",
             });
-  
+            router.refresh();
             router.push( `/patients/${patientId}/appointments/new-appointment/success`);
         } else {
             toast({
@@ -101,7 +103,7 @@ export const AppointmentForm = ({ patientId, type = "create", appointment }: App
                 title: "Success",
                 description: "Appointmen updated successfully",
             });
-  
+            router.refresh();
             router.push( `/patients/${patientId}/appointments/new-appointment/success`);
         } else {
             toast({
@@ -122,7 +124,38 @@ export const AppointmentForm = ({ patientId, type = "create", appointment }: App
                 description: "Appointmen scheduled successfully",
             });
   
-            router.refresh();
+            if (onSuccess) {
+              onSuccess(); 
+            }else {
+              router.refresh();
+            }
+            
+        } else {
+            toast({
+                title: "Error",
+                description: result.message,
+                variant: "destructive",
+            });
+        }      
+    } 
+
+      if (type === "cancel" && patientId) {
+        console.log("canceledAppointmen", values)
+        const result = await cancelAppointment({ patientId: patientId, appointmentId: appointment?.id, status: status,  ...values });
+
+        if (result.success) {
+            form.reset()
+                toast({
+                title: "Success",
+                description: "Appointmen canceled successfully",
+            });
+  
+            if (onSuccess) {
+              onSuccess(); 
+            }else {
+              router.refresh();
+            }
+            
         } else {
             toast({
                 title: "Error",
@@ -162,6 +195,11 @@ export const AppointmentForm = ({ patientId, type = "create", appointment }: App
             <p className="text-dark-700">
               Request a new appointment in 10 seconds.
             </p>
+          </section>
+        )}
+        {type === "update" && (
+          <section className="mb-12 space-y-4">
+            <h1 className="header">Update Appointment</h1>
           </section>
         )}
 

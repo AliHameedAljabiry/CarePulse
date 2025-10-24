@@ -9,7 +9,6 @@ import React from 'react'
 
 const Register = async ({ params }: { params: Promise<{ userId: string }> } ) => {
   const userId = (await params).userId;
-  
   const currentPatient = await db.select().from(patient).where(eq(patient.userId, userId)).limit(1)
   const pat = currentPatient && currentPatient.length > 0 ? currentPatient[0] : null;
   if (pat) redirect(`/patients/${(pat as any).id}/appointments/new-appointment`);
@@ -19,10 +18,12 @@ const Register = async ({ params }: { params: Promise<{ userId: string }> } ) =>
     <div className="h-screen flex max-h-screen ">
       <section className=" remove-scrollbar container  max-h-screen overflow-auto ">
         <div className="sub-container max-w-5xl flex-1 flex-col ">
-          <RegisterForm />
+          <RegisterForm 
+            type="create"
+          />
         </div>
       </section>
-     <RegisterImage/>
+     <RegisterImage darkSrc="/assets/images/register-img.png" lightSrc="/assets/images/register-light.png"/>
     </div>
   )
 }

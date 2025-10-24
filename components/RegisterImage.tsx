@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
-export function RegisterImage() {
+export function RegisterImage({ darkSrc, lightSrc }: { darkSrc: string; lightSrc: string }) {
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -20,8 +20,8 @@ export function RegisterImage() {
 
   return (
     <Image
-      src={isDark ? "/assets/images/register-img.png" : "/assets/images/register-light.png"}
-      alt="patient"
+      src={isDark ? darkSrc : lightSrc}
+      alt="Registration illustration"
       width={1000}
       height={2000}
       priority

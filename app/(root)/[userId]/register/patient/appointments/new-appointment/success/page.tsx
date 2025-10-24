@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Doctors } from "@/constants";
-import { formatDateTime, getDoctorImage } from "@/lib/utils";
+import { formatDate, formatDateTime, getDoctorImage } from "@/lib/utils";
 import { db } from "@/database/drizzle";
 import { appointments, patient } from "@/database/schema";
 import { eq } from "drizzle-orm";
@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm";
 const RequestSuccess = async({ params }: { params: Promise<{ userId: string }> } ) => {
   const patientId = (await params).userId;
   const appointment = await  db.select().from(appointments).where(eq(appointments.patientId, patientId))
-  const currenAppointment= appointment[0]
+  const currenAppointment= appointment[appointment.length -1]
   console.log(currenAppointment)
   const doctorImage = getDoctorImage(currenAppointment?.doctor, Doctors);
 
@@ -51,7 +51,7 @@ const RequestSuccess = async({ params }: { params: Promise<{ userId: string }> }
               width={24}
               alt="calendar"
             />
-            <p> {formatDateTime(currenAppointment?.schedule).dateTime}</p>
+            <p> {formatDate(currenAppointment?.schedule)}</p>
           </div>
         </section>
 

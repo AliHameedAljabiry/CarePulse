@@ -197,7 +197,7 @@ const FileUpload = ({
           {...getRootProps()}
           
           className={cn(
-            "flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer p-6 transition",
+            "flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer p-6 transition dark:bg-dark-400",
             styles.dropzone,
             isDragActive ? "opacity-80 border-green-500 bg-green-50" : "opacity-100"
           )}
