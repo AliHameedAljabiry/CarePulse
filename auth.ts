@@ -148,6 +148,7 @@ export const authOptions: NextAuthConfig = {
     async jwt({ token, user }) {
       try {
         const emailToQuery = user?.email || (token.email as string);
+        console.log(`[auth][jwt] Processing token for email: ${emailToQuery}, user: ${!!user}`);
 
         if (emailToQuery) {
           // Always look up the user by email to get the correct database UUID
@@ -159,6 +160,7 @@ export const authOptions: NextAuthConfig = {
 
           if (dbUser.length > 0) {
             const u = dbUser[0];
+            console.log(`[auth][jwt] Found user in DB: id=${u.id}, email=${u.email}`);
             token.id = u.id.toString();
             token.role = u.role;
             token.status = u.status;
@@ -169,6 +171,7 @@ export const authOptions: NextAuthConfig = {
             token.username = u.username;
           } else if (user?.email) {
             // For credentials provider, use user object if DB lookup fails
+            console.log(`[auth][jwt] User not found in DB, using fallback for: ${user.email}`);
             token.id = (user as any).id ?? token.sub;
             token.role = (user as any).role;
             token.name = user.name;
