@@ -113,7 +113,6 @@ export const authOptions: NextAuthConfig = {
     async signIn({ user, account, profile }) {
       try {
         if (account?.provider && account.type === "oauth") {
-          console.log(`[auth][signIn] OAuth sign-in: provider=${account.provider}, email=${user.email}`);
           const existing = await db
             .select()
             .from(users)
@@ -121,7 +120,6 @@ export const authOptions: NextAuthConfig = {
             .limit(1);
 
           if (existing.length === 0) {
-            console.log(`[auth][signIn] Creating new user for ${user.email}`);
             await db.insert(users).values({
               email: user.email!,
               fullName: user.name || "No Name",
@@ -129,12 +127,9 @@ export const authOptions: NextAuthConfig = {
               phoneNumber: (user as any).phoneNumber || "-",
               role: "USER",
               status: "PENDING",
-              image: user.image || null,
+              image: (user as any).image || null,
               username: (user as any).username || null,
             });
-            console.log(`[auth][signIn] User created successfully for ${user.email}`);
-          } else {
-            console.log(`[auth][signIn] User already exists for ${user.email}`);
           }
         }
       } catch (err) {
@@ -147,20 +142,16 @@ export const authOptions: NextAuthConfig = {
     // populate token with DB values after initial sign in
     async jwt({ token, user }) {
       try {
-        const emailToQuery = user?.email || (token.email as string);
-        console.log(`[auth][jwt] Processing token for email: ${emailToQuery}, user: ${!!user}`);
-
-        if (emailToQuery) {
-          // Always look up the user by email to get the correct database UUID
+        if (user && user.email) {
+          // prefer DB record to ensure canonical fields (id, role, status, etc.)
           const dbUser = await db
             .select()
             .from(users)
-            .where(eq(users.email, emailToQuery))
+            .where(eq(users.email, user.email as string))
             .limit(1);
 
           if (dbUser.length > 0) {
             const u = dbUser[0];
-            console.log(`[auth][jwt] Found user in DB: id=${u.id}, email=${u.email}`);
             token.id = u.id.toString();
             token.role = u.role;
             token.status = u.status;
@@ -169,13 +160,10 @@ export const authOptions: NextAuthConfig = {
             token.phoneNumber = u.phoneNumber;
             token.image = u.image;
             token.username = u.username;
-          } else if (user?.email) {
-            // For credentials provider, use user object if DB lookup fails
-            console.log(`[auth][jwt] User not found in DB, using fallback for: ${user.email}`);
+          } else {
+            // fallback to provider returned user
             token.id = (user as any).id ?? token.sub;
-            token.role = (user as any).role;
-            token.name = user.name;
-            token.email = user.email;
+            token.role = (user as any).role ?? token.role;
           }
         }
       } catch (err) {
