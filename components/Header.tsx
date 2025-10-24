@@ -39,7 +39,7 @@ const Header = () => {
         </div>
         <div className='flex items-center gap-10'>
            {currentUser?.id && (
-              <Link href='/my-profile' className={cn(
+              <Link href={`/${currentUser?.id}/my-profile`} className={cn(
                 'text-lg font-medium hover:text-primary', 
                 pathname === '/my-profile' && 'text-primary')}>
                 <div className='w-12 h-12 rounded-full '>
