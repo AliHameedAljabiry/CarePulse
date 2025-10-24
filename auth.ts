@@ -48,16 +48,7 @@ export const authOptions: NextAuthConfig = {
       ? [
           GoogleProvider({
             clientId: google.clientId,
-            clientSecret: google.clientSecret,
-            allowDangerousEmailAccountLinking: true,
-            profile(profile) {
-              return {
-                id: profile.sub,
-                name: profile.name,
-                email: profile.email,
-                image: profile.picture,
-              };
-            },
+            clientSecret: google.clientSecret
           })
         ]
       : []),
@@ -121,7 +112,13 @@ export const authOptions: NextAuthConfig = {
     // When user signs in with OAuth create DB user if missing
     async signIn({ user, account, profile }) {
       try {
+        console.log("auth called with", {
+          user: user?.email,
+          provider: account?.provider,
+          accountType: account?.type,
+        })
         if (account?.provider && account.type === "oauth") {
+          console.log("auth check passed, checking database...")
           const existing = await db
             .select()
             .from(users)
@@ -129,6 +126,7 @@ export const authOptions: NextAuthConfig = {
             .limit(1);
 
           if (existing.length === 0) {
+            console.log("auth user not found, inserting...")
             await db.insert(users).values({
               email: user.email!,
               fullName: user.name || "No Name",
@@ -139,8 +137,12 @@ export const authOptions: NextAuthConfig = {
               image: (user as any).image || null,
               username: (user as any).username || null,
             });
-          }
-        }
+            console.log("auth user inserted seccssfully")
+          }else {console.log("auth user allready exist")}
+        }else {console.log("auth check failed", {
+          hasProvider: !!account?.provider,
+          isOauth: account?.type === "oauth"
+        })}
       } catch (err) {
         console.error("[auth][signIn] error:", err);
         // still allow sign in flow to continue
