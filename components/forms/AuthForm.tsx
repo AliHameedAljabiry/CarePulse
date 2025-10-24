@@ -94,11 +94,11 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
         try {
             await signIn("google");
             if (currentUser) {
-                    router.push(`/${currentUser.id}/register`);
-            } else {
-                console.log("currentUser is null after successful operation");
                 router.refresh();
-            }
+                router.push(`/${currentUser.id}/register`);
+            } 
+               
+          
         } catch (error) {
             console.error("Google Sign-In Error:", error);
             toast({
