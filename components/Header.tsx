@@ -24,7 +24,7 @@ const Header = () => {
   });
 
   const pathname = usePathname();
-
+  console.log("currentUser",currentUser)
 
   return (
     <div className="sticky  bg-white dark:bg-[#080808] px-5 xs:px-10 py-4 shadow-md sm:px-10 md:px-16 lg:px-18  xl:px-22 2xl:px-24 z-50 flex items-center justify-between  w-full">
@@ -36,6 +36,7 @@ const Header = () => {
              {currentPatient?.id && currentUser?.id && <Link href={`/${currentUser?.id}/register/patient/${currentPatient?.id}/patient-info`} className="font-bold whitespace-nowrap">Patient Info</Link>}
              {currentPatient?.id && currentUser?.id && <Link href={`/${currentUser?.id}/register/patient/${currentPatient?.id}/appointments`} className="font-bold whitespace-nowrap">My Appointment</Link>}
              {currentUser?.role === 'ADMIN' && <Link href="/admin" className="text-green-500 font-bold">Admin</Link>}
+             
         </div>
         <div className='flex items-center gap-10'>
            {currentUser?.id && (
