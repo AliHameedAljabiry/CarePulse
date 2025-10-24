@@ -142,12 +142,14 @@ export const authOptions: NextAuthConfig = {
     // populate token with DB values after initial sign in
     async jwt({ token, user }) {
       try {
-        if (user && user.email) {
+        const emailToQuery = user?.email || (token.email as string);
+
+        if (emailToQuery) {
           // Always look up the user by email to get the correct database UUID
           const dbUser = await db
             .select()
             .from(users)
-            .where(eq(users.email, user.email as string))
+            .where(eq(users.email, emailToQuery))
             .limit(1);
 
           if (dbUser.length > 0) {
@@ -160,24 +162,12 @@ export const authOptions: NextAuthConfig = {
             token.phoneNumber = u.phoneNumber;
             token.image = u.image;
             token.username = u.username;
-          }
-        } else if (token.sub) {
-          // On subsequent calls, use email from token if available
-          const dbUser = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, token.email as string))
-            .limit(1);
-
-          if (dbUser.length > 0) {
-            const u = dbUser[0];
-            token.id = u.id.toString();
-            token.role = u.role;
-            token.status = u.status;
-            token.name = u.fullName;
-            token.phoneNumber = u.phoneNumber;
-            token.image = u.image;
-            token.username = u.username;
+          } else if (user?.email) {
+            // For credentials provider, use user object if DB lookup fails
+            token.id = (user as any).id ?? token.sub;
+            token.role = (user as any).role;
+            token.name = user.name;
+            token.email = user.email;
           }
         }
       } catch (err) {
