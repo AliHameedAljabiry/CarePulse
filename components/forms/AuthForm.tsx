@@ -93,10 +93,8 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
     const signInWithGoogle = async () => {
         try {
             await signIn("google");
-            if (currentUser) {
-                router.refresh();
-                router.push(`/${currentUser.id}/register`);
-            } 
+                router.push(`/`);
+         
                
           
         } catch (error) {
