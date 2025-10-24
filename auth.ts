@@ -113,6 +113,7 @@ export const authOptions: NextAuthConfig = {
     async signIn({ user, account, profile }) {
       try {
         if (account?.provider && account.type === "oauth") {
+          console.log(`[auth][signIn] OAuth sign-in: provider=${account.provider}, email=${user.email}`);
           const existing = await db
             .select()
             .from(users)
@@ -120,6 +121,7 @@ export const authOptions: NextAuthConfig = {
             .limit(1);
 
           if (existing.length === 0) {
+            console.log(`[auth][signIn] Creating new user for ${user.email}`);
             await db.insert(users).values({
               email: user.email!,
               fullName: user.name || "No Name",
@@ -130,6 +132,9 @@ export const authOptions: NextAuthConfig = {
               image: user.image || null,
               username: (user as any).username || null,
             });
+            console.log(`[auth][signIn] User created successfully for ${user.email}`);
+          } else {
+            console.log(`[auth][signIn] User already exists for ${user.email}`);
           }
         }
       } catch (err) {
