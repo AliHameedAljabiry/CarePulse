@@ -127,7 +127,7 @@ export const authOptions: NextAuthConfig = {
               phoneNumber: (user as any).phoneNumber || "-",
               role: "USER",
               status: "PENDING",
-              image: (user as any).image || null,
+              image: user.image || null,
               username: (user as any).username || null,
             });
           }
@@ -143,7 +143,7 @@ export const authOptions: NextAuthConfig = {
     async jwt({ token, user }) {
       try {
         if (user && user.email) {
-          // prefer DB record to ensure canonical fields (id, role, status, etc.)
+          // Always look up the user by email to get the correct database UUID
           const dbUser = await db
             .select()
             .from(users)
@@ -160,10 +160,24 @@ export const authOptions: NextAuthConfig = {
             token.phoneNumber = u.phoneNumber;
             token.image = u.image;
             token.username = u.username;
-          } else {
-            // fallback to provider returned user
-            token.id = (user as any).id ?? token.sub;
-            token.role = (user as any).role ?? token.role;
+          }
+        } else if (token.sub) {
+          // On subsequent calls, use email from token if available
+          const dbUser = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, token.email as string))
+            .limit(1);
+
+          if (dbUser.length > 0) {
+            const u = dbUser[0];
+            token.id = u.id.toString();
+            token.role = u.role;
+            token.status = u.status;
+            token.name = u.fullName;
+            token.phoneNumber = u.phoneNumber;
+            token.image = u.image;
+            token.username = u.username;
           }
         }
       } catch (err) {
