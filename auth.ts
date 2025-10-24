@@ -48,7 +48,16 @@ export const authOptions: NextAuthConfig = {
       ? [
           GoogleProvider({
             clientId: google.clientId,
-            clientSecret: google.clientSecret
+            clientSecret: google.clientSecret,
+            allowDangerousEmailAccountLinking: true,
+            profile(profile) {
+              return {
+                id: profile.sub,
+                name: profile.name,
+                email: profile.email,
+                image: profile.picture,
+              };
+            },
           })
         ]
       : []),
@@ -197,3 +206,6 @@ export const { GET, POST } = handlers;
 
 // Backwards-compatible alias used elsewhere in the repo
 export const getServerAuthSession = auth;
+
+
+
