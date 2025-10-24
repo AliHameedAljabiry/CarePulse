@@ -17,6 +17,7 @@ import { Check, Eye, EyeOff } from 'lucide-react'
 import { Checkbox } from './ui/checkbox'
 import { Button } from './ui/button'
 import IdentificationDocument from './ImagekitDisplyer'
+import ImagekitDisplyer from './ImagekitDisplyer'
 
 
 
@@ -129,8 +130,10 @@ const RenderField = ({ field, props}: {field: any, props: CustomProps}) => {
 
         case FormFieldType.SKELETON:
             return (
-                <div className='flex gap-5 flex-col xl:flex-row'>
-                    {defaultID !== null && sceletonType === "ID" && <IdentificationDocument documentUrl={defaultID as any}/>}
+                <div className='flex gap-5 flex-col xl:flex-row w-full h-full justify-between '>
+                    <div className='w-1/2 h-56'>
+                        {defaultID !== null && sceletonType === "ID" && <ImagekitDisplyer documentUrl={defaultID as any} text={"No Identification Document Uploaded"}/>}
+                    </div>
                     {renderSkeleton ? renderSkeleton(field) : null}
                 </div>
                 

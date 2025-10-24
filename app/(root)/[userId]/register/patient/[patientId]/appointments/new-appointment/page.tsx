@@ -8,8 +8,8 @@ import Image from "next/image";
 
 
 
-const Appointment = async({ params }: { params: Promise<{ userId: string }> } ) => {
-  const patientId = (await params).userId;
+const Appointment = async({ params }: { params: Promise<{ patientId: string }> } ) => {
+  const patientId = (await params).patientId;
    
     console.log("patientId", patientId)
 

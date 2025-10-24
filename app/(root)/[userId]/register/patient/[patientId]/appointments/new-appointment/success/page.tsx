@@ -8,8 +8,8 @@ import { db } from "@/database/drizzle";
 import { appointments, patient } from "@/database/schema";
 import { eq } from "drizzle-orm";
 
-const RequestSuccess = async({ params }: { params: Promise<{ userId: string }> } ) => {
-  const patientId = (await params).userId;
+const RequestSuccess = async({ params }: { params: Promise<{ patientId: string }> } ) => {
+  const patientId = (await params).patientId;
   const appointment = await  db.select().from(appointments).where(eq(appointments.patientId, patientId))
   const currenAppointment= appointment[appointment.length -1]
   console.log(currenAppointment)

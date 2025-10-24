@@ -75,7 +75,7 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
             });
 
             if (currentUser) {
-                router.push(`/patients/${currentUser.id}/register`);
+                router.push(`/`);
             } else {
                 console.log("currentUser is null after successful operation");
                 router.refresh();
@@ -94,7 +94,7 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
         try {
             await signIn("google");
             if (currentUser) {
-                    router.push(`/patients/${currentUser.id}/register`);
+                    router.push(`/`);
             } else {
                 console.log("currentUser is null after successful operation");
                 router.refresh();
@@ -113,7 +113,7 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
         try {
             await signIn("facebook");
             if (currentUser) {
-                router.push(`/patients/${currentUser.id}/register`);
+                router.push(`/`);
             } else {
                 console.log("currentUser is null after successful operation");
                 router.refresh();

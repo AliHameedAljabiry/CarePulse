@@ -7,9 +7,9 @@ import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 import React from 'react'
 
-const Register = async ({ params }: { params: Promise<{ userId: string }> } ) => {
-  const userId = (await params).userId;
-  const currentPatient = await db.select().from(patient).where(eq(patient.userId, userId)).limit(1)
+const Register = async ({ params }: { params: Promise<{ patientId: string }> } ) => {
+  const patientId = (await params).patientId;
+  const currentPatient = await db.select().from(patient).where(eq(patient.id, patientId)).limit(1)
   const pat = currentPatient && currentPatient.length > 0 ? currentPatient[0] : null;
   if (pat) redirect(`/patients/${(pat as any).id}/appointments/new-appointment`);
 

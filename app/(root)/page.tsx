@@ -19,7 +19,7 @@ const Home = async () => {
     const currentPatient = await db.select().from(patient).where(eq(patient.userId, userId)).limit(1)
     const pat = currentPatient && currentPatient.length > 0 ? currentPatient[0] : null;
     if (pat) {
-      redirect(`/patients/${(pat as any).id}/appointments/new-appointment`);
+      redirect(`/${userId}/register/patient/${(pat as any).id}/appointments/new-appointment`);
     }else if (clinic) {
       redirect(`/${userId}/register/clinic/${(clinic as any).id}`);
     }

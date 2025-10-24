@@ -6,8 +6,10 @@ import { patient, users} from '@/database/schema'
 import { eq } from 'drizzle-orm'
 import React from 'react'
 
-const Register = async ({ params }: { params: Promise<{ userId: string }> } ) => {
-    const patientId = (await params).userId;
+const clinicImage = "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=300&q=80"
+
+const Register = async ({ params }: { params: Promise<{ patientId: string }> } ) => {
+    const patientId = (await params).patientId;
   
     const currentPatient = await db.select().from(patient).where(eq(patient.id, patientId)).limit(1);
     const pat = currentPatient && currentPatient.length > 0 ? currentPatient[0] : null;
@@ -26,7 +28,7 @@ const Register = async ({ params }: { params: Promise<{ userId: string }> } ) =>
           />
         </div>
       </section>
-     <RegisterImage/>
+     <RegisterImage darkSrc={clinicImage} lightSrc="/assets/images/register-light.png"/>
     </div>
   )
 }

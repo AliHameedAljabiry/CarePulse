@@ -113,7 +113,6 @@ const RegisterForm = ({patient, type}: PatientFormProps) => {
 
     }
 
-
   return (
    <div className='dark:text-white'>
         <Form {...form}>

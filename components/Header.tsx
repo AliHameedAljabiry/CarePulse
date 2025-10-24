@@ -33,8 +33,8 @@ const Header = () => {
                 <Image src="/assets/icons/logo-icon.svg" alt="Patient"  width={160} height={160} className=" h-10 w-fit"/>
                 <p className="text-2xl hidden sm:block font-bold dark:text-white">CarePulse</p>
             </Link>
-             {currentPatient?.id && <Link href={`/patients/${currentPatient?.id}/register/patient-info`} className="font-bold whitespace-nowrap">Patient Info</Link>}
-             {currentPatient?.id && <Link href={`/patients/${currentPatient?.id}/appointments`} className="font-bold whitespace-nowrap">My Appointment</Link>}
+             {currentPatient?.id && currentUser?.id && <Link href={`/${currentUser?.id}/register/patient/${currentPatient?.id}/patient-info`} className="font-bold whitespace-nowrap">Patient Info</Link>}
+             {currentPatient?.id && currentUser?.id && <Link href={`/${currentUser?.id}/register/patient/${currentPatient?.id}/appointments`} className="font-bold whitespace-nowrap">My Appointment</Link>}
              {currentUser?.role === 'ADMIN' && <Link href="/admin" className="text-green-500 font-bold">Admin</Link>}
         </div>
         <div className='flex items-center gap-10'>

@@ -10,8 +10,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-const Appointments = async ({ params }: { params: Promise<{ userId: string }> }) => {
-    const patientId = (await params).userId;
+const Appointments = async ({ params }: { params: Promise<{ patientId: string }> }) => {
+    const patientId = (await params).patientId;
     const patientAppointments = await db.select().from(appointments).where(eq(appointments.patientId, patientId));
     console.log("Fetched appointments:", patientAppointments);
     

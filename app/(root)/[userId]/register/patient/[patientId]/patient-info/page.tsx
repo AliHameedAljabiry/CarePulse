@@ -11,8 +11,8 @@ import GoBack from '@/components/GoBack';
 import Link from 'next/link';
 import ImagekitDisplyer from '@/components/ImagekitDisplyer';
 
-const PatientInfo = async ({ params }: { params: Promise<{ userId: string }> }) => {
-  const patientId = (await params).userId;
+const PatientInfo = async ({ params }: { params: Promise<{ patientId: string }> }) => {
+  const patientId = (await params).patientId;
 
   const currentPatient = await db.select().from(patient).where(eq(patient.id, patientId)).limit(1);
   const pat = currentPatient && currentPatient.length > 0 ? currentPatient[0] : null;
