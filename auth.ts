@@ -7,8 +7,7 @@ import { users } from "./database/schema";
 import { eq } from "drizzle-orm";
 import { compare } from "bcryptjs";
 
-// <-- NEW: DrizzleAdapter >> npm install @auth/drizzle-adapter drizzle-orm --legacy-peer-deps
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
+//npm install @auth/drizzle-adapter drizzle-orm --legacy-peer-deps
 
 type ProviderEnv = {
   clientId: string;
@@ -16,6 +15,7 @@ type ProviderEnv = {
 };
 
 const readProviderEnv = (idKey: string, secretKey: string, provider: string): ProviderEnv => {
+  // Support both the canonical env var names and the alternative AUTH_* names
   const altIdKey = `AUTH_${idKey}`;
   const altSecretKey = `AUTH_${secretKey}`;
 
@@ -45,13 +45,10 @@ export const authOptions: NextAuthConfig = {
   trustHost: true,
   secret: process.env.AUTH_SECRET,
 
-  // <-- NEW: attach the DrizzleAdapter (uses your `db` instance)
-  adapter: DrizzleAdapter(db),
-
   providers: [
     ...(google.clientId && google.clientSecret
       ? [
-          GoogleProvider({
+         GoogleProvider({
             clientId: google.clientId,
             clientSecret: google.clientSecret,
             authorization: {
@@ -59,22 +56,23 @@ export const authOptions: NextAuthConfig = {
                 prompt: "consent",
                 access_type: "offline",
                 response_type: "code",
-                scope: "openid email profile",
+                scope: "openid email profile", 
               },
             },
           }),
+
         ]
       : []),
     ...(facebook.clientId && facebook.clientSecret
       ? [
           FacebookProvider({
             clientId: facebook.clientId,
-            clientSecret: facebook.clientSecret,
-          }),
+            clientSecret: facebook.clientSecret
+          })
         ]
       : []),
 
-    CredentialsProvider({
+      CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
@@ -86,7 +84,7 @@ export const authOptions: NextAuthConfig = {
         const userRow = await db
           .select()
           .from(users)
-          .where(eq(users.email, credentials.email))
+          .where(eq(users.email, credentials.email.toString()))
           .limit(1);
 
         if (userRow.length === 0) return null;
@@ -98,7 +96,7 @@ export const authOptions: NextAuthConfig = {
           return null;
         }
 
-        const isValid = await compare(credentials.password, user.password);
+        const isValid = await compare(credentials.password.toString(), user.password);
         if (!isValid) return null;
 
         return {
@@ -114,16 +112,16 @@ export const authOptions: NextAuthConfig = {
   ],
 
   session: {
-    strategy: "jwt",
+    strategy: "jwt"
   },
 
   pages: {
-    signIn: "/",
+    signIn: "/"
   },
 
   callbacks: {
-    // When user signs in with OAuth, create DB user if missing (keeps your custom users table in sync)
-    async signIn({ user, account, profile }) {
+    // When user signs in with OAuth create DB user if missing
+   async signIn({ user, account, profile }) {
       try {
         console.log("auth called with", {
           user: user?.email,
@@ -131,64 +129,56 @@ export const authOptions: NextAuthConfig = {
           accountType: account?.type,
         });
 
-        if (account?.type === "oauth") {
-          // try a few places for the email (user and profile)
-          const email =
-            (user as any)?.email || (profile as any)?.email || (profile as any)?.login || null;
-
-          if (!email) {
-            console.error("[auth][signIn] Missing email from OAuth provider; aborting sign-in.");
-            return false; // block sign-in if no email present
+        if (account?.provider && account.type === "oauth") {
+          if (!user?.email) {
+            console.error("[auth][signIn] Google returned no email — cannot create DB record");
+            return false; // stop sign-in if no email
           }
 
-          // Check your custom users table for existing record
           const existing = await db
             .select()
             .from(users)
-            .where(eq(users.email, email))
+            .where(eq(users.email, user.email))
             .limit(1);
 
           if (existing.length === 0) {
-            console.log("auth user not found, inserting into custom users table...");
-            try {
-              await db.insert(users).values({
-                email,
-                fullName: (user as any)?.name || (profile as any)?.name || "No Name",
-                password: "OAUTH", // marker to indicate OAuth created user
-                phoneNumber: (user as any)?.phoneNumber || (profile as any)?.phoneNumber || "-",
-                role: "USER",
-                status: "PENDING",
-                image: (user as any)?.image || (profile as any)?.picture || null,
-                username: (user as any)?.username || (profile as any)?.username || null,
-              });
-              console.log("auth user inserted successfully");
-            } catch (insertErr) {
-              // handle potential race conditions or unique constraint errors gracefully
-              console.error("[auth][signIn] insert error (ignored):", insertErr);
-            }
+            console.log("auth user not found, inserting...");
+            await db.insert(users).values({
+              email: user.email,
+              fullName: user.name || "No Name",
+              password: "OAUTH",
+              phoneNumber: (user as any).phoneNumber || "-",
+              role: "USER",
+              status: "PENDING",
+              image: (user as any).image || null,
+              username: (user as any).username || null,
+            });
+            console.log("auth user inserted successfully");
           } else {
-            console.log("auth user already exists in custom users table");
+            console.log("auth user already exists");
           }
         } else {
-          console.log("auth check: not an oauth account, skipping oauth-create logic");
+          console.log("auth check failed", {
+            hasProvider: !!account?.provider,
+            isOauth: account?.type === "oauth",
+          });
         }
       } catch (err) {
         console.error("[auth][signIn] error:", err);
-        // intentionally allow sign-in to continue even if DB sync fails
       }
       return true;
     },
 
+
     // populate token with DB values after initial sign in
     async jwt({ token, user }) {
       try {
-        // If a provider user object is available, prefer DB values
-        const email = (user as any)?.email ?? token.email;
-        if (email) {
+        if (user && user.email) {
+          // prefer DB record to ensure canonical fields (id, role, status, etc.)
           const dbUser = await db
             .select()
             .from(users)
-            .where(eq(users.email, email))
+            .where(eq(users.email, user.email as string))
             .limit(1);
 
           if (dbUser.length > 0) {
@@ -203,8 +193,8 @@ export const authOptions: NextAuthConfig = {
             token.username = u.username;
           } else {
             // fallback to provider returned user
-            token.id = (user as any)?.id ?? token.sub;
-            token.role = (user as any)?.role ?? token.role;
+            token.id = (user as any).id ?? token.sub;
+            token.role = (user as any).role ?? token.role;
           }
         }
       } catch (err) {
@@ -238,3 +228,6 @@ export const { GET, POST } = handlers;
 
 // Backwards-compatible alias used elsewhere in the repo
 export const getServerAuthSession = auth;
+
+
+
