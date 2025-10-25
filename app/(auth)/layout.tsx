@@ -8,7 +8,9 @@ import { ReactNode } from "react"
 
 const AuthLayout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
-  if (session) redirect(`/${session?.user?.id}/register`);
+  if (session?.user?.id || session?.user?.id !== undefined) {
+    redirect(`/${session?.user?.id}/register`);
+  }
 
     return (
         <div className="h-screen flex max-h-screen  ">
