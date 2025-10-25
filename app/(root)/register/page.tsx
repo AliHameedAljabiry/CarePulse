@@ -11,45 +11,33 @@ const patientImage = "https://images.unsplash.com/photo-1579684385127-1ef15d5081
 const clinicImage = "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&h=300&q=80"
 
 const Register = async () => {
-  const session = await auth()
-  const userId = session?.user?.id
+ const session = await auth();
+   if (!session?.user?.email) redirect("/sign-in");
+ 
+   const dbUser = await db
+     .select()
+     .from(users)
+     .where(eq(users.email, session.user.email))
+     .limit(1);
+ 
+   if (dbUser.length === 0) {
+    redirect("/sign-in");
+   } else {
 
-  if (!userId || userId === undefined) {
-      redirect('/sign-in');
-    } 
-  
-  const userdb = await db
-      .select({
-        id: users.id,
-        email: users.email,
-        fullName: users.fullName,
-        phoneNumber: users.phoneNumber,
-        image: users.image,
-        role: users.role,
-        createdAt: users.createdAt,
-        status: users.status,
-        username: users.username,
-        
-    })
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1)
-  
-    if(userdb && userdb !== undefined) {
-        console.log("userdb id from register", userdb)
-        const currentclinic = await db.select().from(clinics).where(eq(clinics.userId, userId)).limit(1)
-        const clinic = currentclinic && currentclinic.length > 0 ? currentclinic[0] : null;
-        const currentPatient = await db.select().from(patient).where(eq(patient.userId, userId)).limit(1)
-        const pat = currentPatient && currentPatient.length > 0 ? currentPatient[0] : null;
-        if (pat) {
-          redirect(`/register/patient/${(pat as any).id}/appointments/new-appointment`);
-        }else if (clinic) {
-          redirect(`/register/clinic/${(clinic as any).id}`);
-        }
-    } else if (!userdb && userdb === undefined) {
-      console.log("userdb id from register", userdb)
-      redirect("/sign-in")
-    }
+     const currentclinic = await db.select().from(clinics).where(eq(clinics.userId, (dbUser as any).id)).limit(1)
+     const clinic = currentclinic && currentclinic.length > 0 ? currentclinic[0] : null;
+     const currentPatient = await db.select().from(patient).where(eq(patient.userId, (dbUser as any).id)).limit(1)
+     const pat = currentPatient && currentPatient.length > 0 ? currentPatient[0] : null;
+     if (pat) {
+       redirect(`/register/patient/${(pat as any).id}/appointments/new-appointment`);
+     }else if (clinic) {
+       redirect(`/register/clinic/${(clinic as any).id}`);
+     }
+   }
+
+   
+
+   
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900">

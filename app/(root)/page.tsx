@@ -7,36 +7,17 @@ import React from 'react'
 
 const Home = async () => {
   const session = await auth();
-  const userId = session?.user?.id
+  if (!session?.user?.email) redirect("/sign-in");
 
-  if (!userId || userId === undefined) {
-    redirect('/sign-in');
-  } 
+  const dbUser = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, session.user.email))
+    .limit(1);
+
+  if (dbUser.length === 0) redirect("/sign-in");
   
-  const userdb = await db
-    .select({
-      id: users.id,
-      email: users.email,
-      fullName: users.fullName,
-      phoneNumber: users.phoneNumber,
-      image: users.image,
-      role: users.role,
-      createdAt: users.createdAt,
-      status: users.status,
-      username: users.username,
-      
-  })
-  .from(users)
-  .where(eq(users.id, userId))
-  .limit(1)
-
-  if(userdb && userdb !== undefined) {
-    console.log("home: userdb found, redirecting to database", userdb)
-    redirect(`/register`)
-  } else if (!userdb && userdb === undefined) {
-    console.log("home: userdb not found in database", userdb)
-    redirect("/sign-in")
-  }
+  const user = dbUser[0];
 
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900">
