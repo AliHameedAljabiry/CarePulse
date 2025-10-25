@@ -35,8 +35,8 @@ const Register = async () => {
     .where(eq(users.id, userId))
     .limit(1)
   
-    if(userdb) {
-
+    if(userdb && userdb !== undefined) {
+        console.log("userdb id from register", userdb)
         const currentclinic = await db.select().from(clinics).where(eq(clinics.userId, userId)).limit(1)
         const clinic = currentclinic && currentclinic.length > 0 ? currentclinic[0] : null;
         const currentPatient = await db.select().from(patient).where(eq(patient.userId, userId)).limit(1)
@@ -46,7 +46,8 @@ const Register = async () => {
         }else if (clinic) {
           redirect(`/register/clinic/${(clinic as any).id}`);
         }
-    } else {
+    } else if (!userdb && userdb === undefined) {
+      console.log("userdb id from register", userdb)
       redirect("/sign-in")
     }
 

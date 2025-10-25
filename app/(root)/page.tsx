@@ -30,9 +30,11 @@ const Home = async () => {
   .where(eq(users.id, userId))
   .limit(1)
 
-  if(userdb) {
+  if(userdb && userdb !== undefined) {
+    console.log("home: userdb found, redirecting to database", userdb)
     redirect(`/register`)
-  } else {
+  } else if (!userdb && userdb === undefined) {
+    console.log("home: userdb not found in database", userdb)
     redirect("/sign-in")
   }
 

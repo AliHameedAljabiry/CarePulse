@@ -12,7 +12,11 @@ import { ReactNode } from "react"
 const AuthLayout = async ({ children }: { children: ReactNode }) => {
  const session = await auth();
  
- if (session?.user?.id && session?.user?.id !== undefined) redirect("/")
+ if (session?.user?.id && session?.user?.id !== undefined) {
+  redirect("/")
+ } else {
+  console.log("no user id found:", session?.user?.id)
+ }
    
 
     return (
