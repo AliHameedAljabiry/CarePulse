@@ -40,7 +40,7 @@ const google = readProviderEnv("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "Goog
 const facebook = readProviderEnv("FACEBOOK_CLIENT_ID", "FACEBOOK_CLIENT_SECRET", "Facebook");
 
 export const authOptions: NextAuthConfig = {
-  // trustHost: true,
+  trustHost: true,
   secret: process.env.AUTH_SECRET,
 
   providers: [

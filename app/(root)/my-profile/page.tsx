@@ -27,7 +27,10 @@ const MyProfile = () => {
     const [open, setOpen] = useState(false);
  
     const router = useRouter();
-
+    
+    if (!currentUser?.id || currentUser?.id === undefined) {
+        redirect("/sign-in")
+    }
     
     
     const handleSignOut = async () => {

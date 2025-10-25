@@ -1,4 +1,7 @@
 import { auth } from "@/auth";
+import { db } from "@/database/drizzle";
+import { users } from "@/database/schema";
+import { eq } from "drizzle-orm";
 import Image from "next/image"
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -7,10 +10,10 @@ import { ReactNode } from "react"
 
 
 const AuthLayout = async ({ children }: { children: ReactNode }) => {
-  const session = await auth();
-  if (session?.user?.id || session?.user?.id !== undefined) {
-    redirect(`/${session?.user?.id}/register`);
-  }
+ const session = await auth();
+ 
+ if (session?.user?.id && session?.user?.id !== undefined) redirect("/")
+   
 
     return (
         <div className="h-screen flex max-h-screen  ">

@@ -10,9 +10,8 @@ import { ReactNode } from "react";
 
 const RootLayout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
-  if (!session?.user?.id || session?.user?.id === undefined) {
-    redirect('/sign-in');
-  } 
+  
+  if (!session?.user?.id || session?.user?.id === undefined) redirect("/sign-in")
   
 
   after( async () => {

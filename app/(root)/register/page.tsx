@@ -3,7 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
 import { db } from "@/database/drizzle";
-import { clinics, patient } from "@/database/schema";
+import { clinics, patient, users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
@@ -12,20 +12,25 @@ const clinicImage = "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0
 
 const Register = async () => {
   const session = await auth()
-  const userId = session?.user?.id;
-  if (userId) {
+  const userId = session?.user?.id
+
+  if (!userId || userId === undefined) {
+      redirect('/sign-in');
+    } 
+    
+  if (userId || userId !== undefined) {
     const currentclinic = await db.select().from(clinics).where(eq(clinics.userId, userId)).limit(1)
     const clinic = currentclinic && currentclinic.length > 0 ? currentclinic[0] : null;
     const currentPatient = await db.select().from(patient).where(eq(patient.userId, userId)).limit(1)
     const pat = currentPatient && currentPatient.length > 0 ? currentPatient[0] : null;
     if (pat) {
-      redirect(`/${userId}/register/patient/${(pat as any).id}/appointments/new-appointment`);
+      redirect(`/register/patient/${(pat as any).id}/appointments/new-appointment`);
     }else if (clinic) {
-      redirect(`/${userId}/register/clinic/${(clinic as any).id}`);
+      redirect(`/register/clinic/${(clinic as any).id}`);
     }
 
   }
-  
+
   return (
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900">
       <section className="flex-1 flex items-center justify-center p-8">

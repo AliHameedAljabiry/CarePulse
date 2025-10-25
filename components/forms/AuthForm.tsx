@@ -73,13 +73,7 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
                 ? "You have successfully signed in."
                 : "You have successfully signed up.",
             });
-
-            if (currentUser) {
-                router.push(`/${currentUser.id}/register`);
-            } else {
-                console.log("currentUser is null after successful operation");
-                router.refresh();
-            }
+            router.push(`/`);
         } else {
             toast({
                 title: `Error ${isSignIn ? 'Signing In' : 'Signing Up'}`,
@@ -91,42 +85,41 @@ const AuthForm = <T extends FieldValues> ({type, schema, defaultValues, onSubmit
 
 
     const signInWithGoogle = async () => {
-        try {
-            await signIn("google");
-            if (currentUser) {
-                router.push(`/${currentUser.id}/register`);
-            } else {
-                console.log("currentUser is null after successful operation");
-                router.refresh();
-            }
-          
-        } catch (error) {
-            console.error("Google Sign-In Error:", error);
+        const result =  await signIn("google"); 
+        if ((result as any).success) {
             toast({
-                title: "Error Signing In with Google",
-                description: "An unexpected error occurred. Please try again.",
-                variant: "destructive",
+                title: "Success",
+                description: isSignIn
+                ? "You have successfully signed in."
+                : "You have successfully signed up.",
             });
-        }
+            router.push(`/`);
+        } else {
+            toast({
+                title: `Error ${isSignIn ? 'Signing In' : 'Signing Up'}`,
+                description: (result as any).message || "Error Signing In with Google.",
+                variant: 'destructive',
+            })
+        }       
     };
 
     const signInWithFacebook = async () => {
-        try {
-            await signIn("facebook");
-            if (currentUser) {
-                router.push(`/${currentUser.id}/register`);
-            } else {
-                console.log("currentUser is null after successful operation");
-                router.refresh();
-            }
-        } catch (error) {
-            console.error("Facebook Sign-In Error:", error);
+        const result = await signIn("facebook");
+        if ((result as any).success) {
             toast({
-                title: "Error Signing In with Facebook",
-                description: "An unexpected error occurred. Please try again.",
-                variant: "destructive",
+                title: "Success",
+                description: isSignIn
+                ? "You have successfully signed in."
+                : "You have successfully signed up.",
             });
-        }
+            router.push(`/`);
+        } else {
+            toast({
+                title: `Error ${isSignIn ? 'Signing In' : 'Signing Up'}`,
+                description: (result as any).message || "Error Signing In with Facebook.",
+                variant: 'destructive',
+            })
+        }        
     };
 
 
