@@ -46,10 +46,19 @@ export const authOptions: NextAuthConfig = {
   providers: [
     ...(google.clientId && google.clientSecret
       ? [
-          GoogleProvider({
+         GoogleProvider({
             clientId: google.clientId,
-            clientSecret: google.clientSecret
-          })
+            clientSecret: google.clientSecret,
+            authorization: {
+              params: {
+                prompt: "consent",
+                access_type: "offline",
+                response_type: "code",
+                scope: "openid email profile", 
+              },
+            },
+          }),
+
         ]
       : []),
     ...(facebook.clientId && facebook.clientSecret
@@ -110,45 +119,54 @@ export const authOptions: NextAuthConfig = {
 
   callbacks: {
     // When user signs in with OAuth create DB user if missing
-    async signIn({ user, account, profile }) {
+   async signIn({ user, account, profile }) {
       try {
         console.log("auth called with", {
           user: user?.email,
           provider: account?.provider,
           accountType: account?.type,
-        })
+        });
+
         if (account?.provider && account.type === "oauth") {
-          console.log("auth check passed, checking database...")
+          if (!user?.email) {
+            console.error("[auth][signIn] Google returned no email — cannot create DB record");
+            return false; // stop sign-in if no email
+          }
+
           const existing = await db
             .select()
             .from(users)
-            .where(eq(users.email, user.email as string))
+            .where(eq(users.email, user.email))
             .limit(1);
 
           if (existing.length === 0) {
-            console.log("auth user not found, inserting...")
+            console.log("auth user not found, inserting...");
             await db.insert(users).values({
-              email: user.email!,
+              email: user.email,
               fullName: user.name || "No Name",
-              password: "OAUTH", // marker for OAuth user
+              password: "OAUTH",
               phoneNumber: (user as any).phoneNumber || "-",
               role: "USER",
               status: "PENDING",
               image: (user as any).image || null,
               username: (user as any).username || null,
             });
-            console.log("auth user inserted seccssfully")
-          }else {console.log("auth user allready exist")}
-        }else {console.log("auth check failed", {
-          hasProvider: !!account?.provider,
-          isOauth: account?.type === "oauth"
-        })}
+            console.log("auth user inserted successfully");
+          } else {
+            console.log("auth user already exists");
+          }
+        } else {
+          console.log("auth check failed", {
+            hasProvider: !!account?.provider,
+            isOauth: account?.type === "oauth",
+          });
+        }
       } catch (err) {
         console.error("[auth][signIn] error:", err);
-        // still allow sign in flow to continue
       }
       return true;
     },
+
 
     // populate token with DB values after initial sign in
     async jwt({ token, user }) {

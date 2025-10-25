@@ -67,7 +67,7 @@ const Register = async () => {
           <div className='grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto'>
             {/* Patient Card */}
             <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-200 dark:border-gray-700 hover:scale-105 transform transition-transform">
-              <Link href={`/${userId}/register/patient`} className="block">
+              <Link href={`/register/patient`} className="block">
                 <div className="relative h-48 overflow-hidden">
                   <Image
                     src={patientImage || "/placeholder-patient.jpg"}
@@ -111,7 +111,7 @@ const Register = async () => {
 
             {/* Clinic Card */}
             <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-200 dark:border-gray-700 hover:scale-105 transform transition-transform">
-              <Link href={`/${userId}/register/clinic`} className="block">
+              <Link href={`/register/clinic`} className="block">
                 <div className="relative h-48 overflow-hidden">
                   <Image
                     src={clinicImage || "/placeholder-clinic.jpg"}

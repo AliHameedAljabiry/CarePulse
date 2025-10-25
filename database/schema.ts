@@ -27,7 +27,7 @@ export const ROLE_ENUM = pgEnum('role', [
 export const users = pgTable('users', {
     id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
     fullName: varchar('full_name', { length: 255 }).notNull(),
-    email: text('email').notNull().unique(),
+    email: varchar("email", { length: 255 }).notNull().unique(),
     password: text('password').notNull(),
     phoneNumber: varchar('phone_number', { length: 20 }).notNull(),
     status: STATUS_ENUM('status').notNull().default('PENDING'),
