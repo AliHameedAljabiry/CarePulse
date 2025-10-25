@@ -12,6 +12,7 @@
     "db:studio": "npx drizzle-kit studio"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.11.0",
     "@hookform/resolvers": "^3.9.0",
     "@neondatabase/serverless": "^1.0.1",
     "@netlify/plugin-nextjs": "^5.13.5",
@@ -57,7 +58,7 @@
     "date-fns": "^3.6.0",
     "date-fns-tz": "^3.2.0",
     "dotenv": "^17.2.2",
-    "drizzle-orm": "^0.44.5",
+    "drizzle-orm": "^0.44.7",
     "embla-carousel-react": "^8.3.0",
     "framer-motion": "^12.23.12",
     "imagekit": "^6.0.0",
